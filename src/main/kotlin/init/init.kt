@@ -18,7 +18,7 @@ fun init() {
 private fun getFederationsRank() {
     getRanksFromLink(countryRank17to21Path)
     getRanksFromLink(countryRank22to26Path)
-    federations.calculateRanking()
+    federations.forEach { it.calculateRanking() }
 }
 
 private fun getRanksFromLink(link: String) {

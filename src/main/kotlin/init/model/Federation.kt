@@ -1,18 +1,30 @@
-package org.example.init
+package org.example.init.model
 
+import org.example.init.currentSeason
+import org.example.init.seasons
+import org.example.init.transfermarktBaseLink
+import org.jsoup.Jsoup
 import kotlin.math.min
-
-
-class RankPointsPerSeason(val season: String, val seasonRank: Double, val fiveYearsRank: Double) {
-    override fun toString(): String {
-        return "${this.season} - ${this.seasonRank} - ${this.fiveYearsRank}"
-    }
-}
 
 
 class Federation(val name: String, val link: String) {
     val rankingPointsRawMap: MutableMap<String, Double> = mutableMapOf()
     val ranking: ArrayList<RankPointsPerSeason> = ArrayList()
+    var league: League? = initLeague()
+
+
+    private fun initLeague(): League? {
+        println("Pobieram dane: ${this.name}")
+        val doc = Jsoup.connect(this.link).get()
+        if (!doc.toString().contains("1.liga")) return null
+        val div = doc.getElementById("yw1") ?: return null
+        val tables = div.getElementsByClass("inline-table")
+        val leagueInfo = tables[0].select("td")[1]
+        val leagueName = leagueInfo.text()
+        val leagueLink = leagueInfo.select("a").attr("href")
+        val fullLink = "${transfermarktBaseLink}$leagueLink"
+        return League(leagueName, fullLink)
+    }
 
     fun calculateRanking() {
         val sortedRanks = this.rankingPointsRawMap.toSortedMap(compareBy { it }).toList()
@@ -36,7 +48,7 @@ class Federation(val name: String, val link: String) {
         ranking.add(newSeasonRank)
     }
 
-    fun toString(forSeason: String): String {
+    fun getRankingSummaryLine(forSeason: String): String {
         var line = this.name
         val defaultLength = 30
         val defaultTab = 10
@@ -52,40 +64,15 @@ class Federation(val name: String, val link: String) {
         val rankString = String.format("%.3f", totalRank)
         return "$line|     $rankString"
     }
-}
 
-
-fun List<Federation>.calculateRanking() {
-    this.forEach { it.calculateRanking() }
-}
-
-fun List<Federation>.printList(forSeason: String) {
-    printListHeader(forSeason)
-    val sortedFederations = sortFederations(forSeason)
-    for (i in 1..sortedFederations.size) {
-        val federationString = sortedFederations[i - 1].toString(forSeason)
-        val spaces = if (i < 10) "   " else "  "
-        println("$i.$spaces$federationString")
+    fun printFederationSummary() {
+        println("=====     ${this.name} - PODSUMOWANIE     =====")
+        this.league?.let { league ->
+            println("1 LIGA: ${league.name}")
+            league.teams.forEach { team ->
+                println(team.toString())
+            }
+        }
+        println("=====     KONIEC PODSUMOWANIA     =====")
     }
-}
-
-private fun printListHeader(forSeason: String) {
-    val defaultLength = 34
-    var header = ""
-    for (i in 1..defaultLength) header = "$header "
-    val forSeasonIndex = seasons.indexOf(forSeason)
-    for (i in 4 downTo 0) {
-        header = "$header  ${seasons[forSeasonIndex - i]}"
-    }
-    println("$header       RAZEM")
-}
-
-private fun List<Federation>.sortFederations(forSeason: String): List<Federation> {
-    return ArrayList(this)
-        .sortedWith(compareByDescending<Federation> { it.ranking.find { it.season == forSeason }!!.fiveYearsRank }
-            .thenByDescending { it.ranking.find { it.season == forSeason }!!.seasonRank })
-}
-
-fun List<Federation>.addNewSeason() {
-    this.forEach { it.addNewSeason() }
 }
