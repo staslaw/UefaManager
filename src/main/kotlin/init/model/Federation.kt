@@ -46,6 +46,7 @@ class Federation(val name: String, val link: String) {
         val fiveYearsRank = ranking[last].fiveYearsRank - ranking[last - 4].seasonRank
         val newSeasonRank = RankPointsPerSeason(currentSeason, 0.0, fiveYearsRank)
         ranking.add(newSeasonRank)
+        this.league?.teams?.forEach { it.addNewSeason() }
     }
 
     fun getRankingSummaryLine(forSeason: String): String {

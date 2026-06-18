@@ -4,6 +4,8 @@ import org.example.init.addNewSeason
 import org.example.init.currentSeason
 import org.example.init.federations
 import org.example.init.init
+import org.example.init.model.Federation
+import org.example.init.model.Team
 import org.example.init.printRankingList
 import org.example.init.seasons
 import java.util.Scanner
@@ -23,20 +25,19 @@ fun main() {
 private fun showMainMenu() {
     println("====================")
     println("Wybierz opcję i wciśnij 'ENTER':")
-    println("1 - wyświetl ranking federacji")
-    println("2 - wyświetl listę federacji")
-    println("3 - dodaj nowy sezon")
+    println("1 - wyświetl listę federacji")
+    println("2 - wyświetl ranking federacji")
+    println("3 - wyświetl ranking klubowy")
+    println("4 - dodaj nowy sezon")
     println("inne - wyjście")
     println("====================")
     val option = scan.nextLine().trim()
-    if (option == "1")  {
-        showFederationRanking()
-    } else if (option == "2") {
-        showFederations()
-    } else if (option == "3") {
-        addSeason()
-    } else {
-        println("KONIEC GRY")
+    when(option) {
+        "1" -> showFederations()
+        "2" -> showFederationRanking()
+        "3" -> showClubRanking()
+        "4" -> addSeason()
+        else -> println("KONIEC GRY")
     }
 }
 
@@ -65,6 +66,18 @@ private fun showFederations() {
     } else {
         println("Nie ma takiej federacji w bazie.")
     }
+    showMainMenu()
+}
+
+private fun showClubRanking() {
+    println("====================")
+    println("RANKING KLUBÓW")
+    val teams = federations.map { it.league?.teams ?: emptyList() }.flatten()
+    val ranked = teams.filter { it.ranking.isNotEmpty() }
+    println("TEAMS: ${teams.size}, RANKED: ${ranked.size}")
+    ranked.sortedWith(compareByDescending<Team> { it.ranking.last().fiveYearsRank }
+        .thenByDescending { it.ranking.last().seasonRank })
+        .forEachIndexed { id, team -> println("${id + 1}     ${team.rankSummary()}") }
     showMainMenu()
 }
 
