@@ -1,31 +1,24 @@
 package org.example.init
 
 import org.example.init.model.Federation
+import org.example.init.model.UefaRankingPoints
 
 
 fun List<Federation>.printRankingList(forSeason: String) {
-    printListHeader(forSeason)
+    println(UefaRankingPoints.getRankingHeader(forSeason))
     val sortedFederations = sortFederations(forSeason)
     for (i in 1..sortedFederations.size) {
         val federationString = sortedFederations[i - 1].getRankingSummaryLine(forSeason)
-        val spaces = if (i < 10) "   " else "  "
-        println("$i.$spaces$federationString")
+        var line = "$i."
+        for (i in line.length..< PRINTING_ID_TAB) line = "$line "
+        println("$line$federationString")
     }
-}
-
-private fun printListHeader(forSeason: String) {
-    val defaultLength = 34
-    var header = ""
-    for (i in 1..defaultLength) header = "$header "
-    val forSeasonIndex = seasons.indexOf(forSeason)
-    for (i in 4 downTo 0) {
-        header = "$header  ${seasons[forSeasonIndex - i]}"
-    }
-    println("$header       RAZEM")
 }
 
 private fun List<Federation>.sortFederations(forSeason: String): List<Federation> {
     return ArrayList(this)
-        .sortedWith(compareByDescending<Federation> { it.ranking.find { it.season == forSeason }!!.fiveYearsRank }
-            .thenByDescending { it.ranking.find { it.season == forSeason }!!.seasonRank })
+        .sortedWith(compareByDescending<Federation> { it.ranking.getFiveYearsRanking(forSeason) }
+            .thenByDescending { it.ranking.getCurrentSeasonPoints(forSeason) }
+            .thenByDescending { it.ranking.getPreviousSeasonPoints(forSeason) }
+        )
 }

@@ -1,15 +1,12 @@
 package org.example.init.model
 
-import org.example.init.currentSeason
-import org.example.init.seasons
+import org.example.init.PRINTING_NAME_TAB
 import org.example.init.transfermarktBaseLink
 import org.jsoup.Jsoup
-import kotlin.math.min
 
 
 class Federation(val name: String, val link: String) {
-    val rankingPointsRawMap: MutableMap<String, Double> = mutableMapOf()
-    val ranking: ArrayList<RankPointsPerSeason> = ArrayList()
+    val ranking: UefaRankingPoints = UefaRankingPoints()
     var league: League? = initLeague()
 
 
@@ -26,44 +23,16 @@ class Federation(val name: String, val link: String) {
         return League(leagueName, fullLink)
     }
 
-    fun calculateRanking() {
-        val sortedRanks = this.rankingPointsRawMap.toSortedMap(compareBy { it }).toList()
-        for (i in 0..< sortedRanks.size) {
-            val season = sortedRanks[i].first
-            val seasonRank = sortedRanks[i].second
-            var fiveYearsRank = 0.0
-            val numberOfSeasons = min(i, 4)
-            for (k in 0..numberOfSeasons) {
-                fiveYearsRank += sortedRanks[i - k].second
-            }
-            val ranking = RankPointsPerSeason(season, seasonRank, fiveYearsRank)
-            this.ranking.add(ranking)
-        }
-    }
-
     fun addNewSeason() {
-        val last = ranking.lastIndex
-        val fiveYearsRank = ranking[last].fiveYearsRank - ranking[last - 4].seasonRank
-        val newSeasonRank = RankPointsPerSeason(currentSeason, 0.0, fiveYearsRank)
-        ranking.add(newSeasonRank)
+        this.ranking.initNewSeason()
         this.league?.teams?.forEach { it.addNewSeason() }
     }
 
     fun getRankingSummaryLine(forSeason: String): String {
         var line = this.name
-        val defaultLength = 30
-        val defaultTab = 10
-        for (i in 1..defaultLength - line.length) line = "$line "
-
-        val seasonsIndex = seasons.indexOf(forSeason)
-        val totalRank = ranking[seasonsIndex].fiveYearsRank
-        for (i in 4 downTo 0) {
-            val seasonRank = ranking[seasonsIndex - i].seasonRank
-            line = "$line $seasonRank"
-            for (i in 1..defaultTab - seasonRank.toString().length) line = "$line "
-        }
-        val rankString = String.format("%.3f", totalRank)
-        return "$line|     $rankString"
+        for (i in line.length..< PRINTING_NAME_TAB) line = "$line "
+        val pointsLine = this.ranking.getRankingSummaryLine(forSeason)
+        return "$line$pointsLine"
     }
 
     fun printFederationSummary() {
@@ -71,7 +40,7 @@ class Federation(val name: String, val link: String) {
         this.league?.let { league ->
             println("1 LIGA: ${league.name}")
             league.teams.forEach { team ->
-                println(team.toString())
+                println(team.getTeamInfoLine())
             }
         }
         println("=====     KONIEC PODSUMOWANIA     =====")

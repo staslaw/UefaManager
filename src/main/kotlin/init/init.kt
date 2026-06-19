@@ -5,7 +5,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.util.LinkedList
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.min
 
 
@@ -24,7 +23,6 @@ fun init() {
 private fun getFederationsRank() {
     getRanksFromLink(countryRank17to21Path)
     getRanksFromLink(countryRank22to26Path)
-    federations.forEach { it.calculateRanking() }
 }
 
 private fun getRanksFromLink(link: String) {
@@ -32,12 +30,13 @@ private fun getRanksFromLink(link: String) {
     val countryTable = doc.select("table").first()
     val countryRecords = countryTable?.select("tr")
     val seasons = getSeasons(countryTable)
-    for (f in federations) {
-        val row = countryRecords?.find { it.select("td").any { it.text().contains(f.name) } }
+    for (federation in federations) {
+        val row = countryRecords?.find { it.select("td").any { it.text().contains(federation.name) } }
         val cells = row?.select("td")
         for (i in 0..< seasons.size) {
             val cellValue =  cells?.get(i + 2)?.text()
-            f.rankingPointsRawMap[seasons[i]] = cellValue?.replace(",", ".")?.toDouble() ?: 0.0
+            val rankValue = cellValue?.replace(",", ".")?.toDouble() ?: 0.0
+            federation.ranking.assignPointsForSeason(seasons[i], rankValue)
         }
     }
 }
@@ -68,14 +67,14 @@ private fun getClubsRank() {
             val cells = rows[i].select("td")
             val country = cells[2].select("img").attr("title")
             if (country == federation.name) {
-                val map = hashMapOf<String, String>()
-                map["name"] = cells[1].text()
-                map["2021/2022"] = cells[3].text()
-                map["2022/2023"] = cells[4].text()
-                map["2023/2024"] = cells[5].text()
-                map["2024/2025"] = cells[6].text()
-                map["2025/2026"] = cells[7].text()
-                rankingClubs.add(map)
+                val rankingClubMap = hashMapOf<String, String>()
+                rankingClubMap["name"] = cells[1].text()
+                rankingClubMap["2021/2022"] = cells[3].text()
+                rankingClubMap["2022/2023"] = cells[4].text()
+                rankingClubMap["2023/2024"] = cells[5].text()
+                rankingClubMap["2024/2025"] = cells[6].text()
+                rankingClubMap["2025/2026"] = cells[7].text()
+                rankingClubs.add(rankingClubMap)
             }
         }
 
@@ -104,8 +103,13 @@ private fun matchTeamNames(
         if (matches.size != 1) {
             rankingClubNotMatched.add(rankingClubMap)
         } else {
-            matches[0].calculateRanking(rankingClubMap)
             leagueClubs.remove(matches[0])
+            rankingClubMap.remove("name")
+            rankingClubMap.forEach {
+                val season = it.key
+                val seasonRank = it.value.replace(",", ".").toDouble()
+                matches[0].ranking.assignPointsForSeason(season, seasonRank)
+            }
         }
     }
     return rankingClubNotMatched
