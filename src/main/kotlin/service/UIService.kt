@@ -6,11 +6,10 @@ import org.example.init.currentSeason
 import org.example.init.federations
 import org.example.init.model.Team
 import org.example.init.model.UefaRankingPoints
-import org.example.init.printRankingList
-import org.example.init.seasons
 
 
 class UIService() {
+    private val federationService = FederationService()
 
     fun printCurrentSeason() {
         println("Aktualny sezon to: $currentSeason")
@@ -21,24 +20,15 @@ class UIService() {
     }
 
     fun printFederations() {
-        federations.forEach { println(it.name) }
+        federationService.printFederations()
     }
 
     fun printFederationSummary(federationName: String) {
-        if (federations.map { it.name }.toList().contains(federationName)) {
-            val federation = federations.first { it.name == federationName }
-            federation.printFederationSummary()
-        } else {
-            println("Nie ma takiej federacji w bazie.")
-        }
+        federationService.printFederationSummary(federationName)
     }
 
     fun printFederationRanking(season: String) {
-        if (seasons.contains(season)) {
-            federations.printRankingList(season)
-        } else {
-            println("Nie ma takiego sezonu w bazie.")
-        }
+        federationService.printFederationRanking(season)
     }
 
     fun printClubRanking() {
