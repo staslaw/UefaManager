@@ -1,5 +1,7 @@
 package org.example.init
 
+import org.example.init.htmlParser.FederationRankingHtmlParser
+import org.example.init.htmlParser.ClubRankingHtmlParser
 import org.example.init.model.Team
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -21,62 +23,30 @@ fun init() {
 }
 
 private fun getFederationsRank() {
-    getRanksFromLink(countryRank17to21Path)
-    getRanksFromLink(countryRank22to26Path)
+    getFederationsRankFromLink(countryRank17to21Path)
+    getFederationsRankFromLink(countryRank22to26Path)
 }
 
-private fun getRanksFromLink(link: String) {
-    val doc = Jsoup.connect(link).get()
-    val countryTable = doc.select("table").first()
-    val countryRecords = countryTable?.select("tr")
-    val seasons = getSeasons(countryTable)
+private fun getFederationsRankFromLink(link: String) {
+    val parser = FederationRankingHtmlParser(link)
+    val countryToRanksMap = parser.getFederationsRankMapFromLink()
     for (federation in federations) {
-        val row = countryRecords?.find { it.select("td").any { it.text().contains(federation.name) } }
-        val cells = row?.select("td")
-        for (i in 0..< seasons.size) {
-            val cellValue =  cells?.get(i + 2)?.text()
-            val rankValue = cellValue?.replace(",", ".")?.toDouble() ?: 0.0
-            federation.ranking.assignPointsForSeason(seasons[i], rankValue)
-        }
-    }
-}
-
-private fun getSeasons(countryTable: Element?): LinkedList<String> {
-    val seasons = LinkedList<String>()
-    countryTable?.select("tr")?.first()?.let { row ->
-        val cells = row.select("td")
-        for (cell in cells) {
-            if (cell.text().startsWith("20")) {
-                seasons.add(cell.text())
+        countryToRanksMap[federation.name]?.let { rankMap ->
+            for (rank in rankMap.entries) {
+                federation.ranking.assignPointsForSeason(rank.key, rank.value)
             }
         }
     }
-    return seasons
 }
 
 private fun getClubsRank() {
-    val doc = Jsoup.connect(clubRank22to26Path).get()
-    val rows = doc.select("tbody").first()!!.select("tr")
+    val parser = ClubRankingHtmlParser(clubRank22to26Path)
+    val countryToClubsToRankMap = parser.getCountryToClubsToRankMapFromLink()
 
-    val allNotMatched = mutableListOf<MutableMap<String, String>>()
+    val allNotMatched = mutableListOf<Pair<String, HashMap<String, Double>>>()
     for (federation in federations) {
-        val leagueTeams = federation.clubs
-        val leagueClubs = leagueTeams.toMutableList()
-        val rankingClubs = mutableListOf<MutableMap<String, String>>()
-        for (i in 1..< rows.size) {
-            val cells = rows[i].select("td")
-            val country = cells[2].select("img").attr("title")
-            if (country == federation.name) {
-                val rankingClubMap = hashMapOf<String, String>()
-                rankingClubMap["name"] = cells[1].text()
-                rankingClubMap["2021/2022"] = cells[3].text()
-                rankingClubMap["2022/2023"] = cells[4].text()
-                rankingClubMap["2023/2024"] = cells[5].text()
-                rankingClubMap["2024/2025"] = cells[6].text()
-                rankingClubMap["2025/2026"] = cells[7].text()
-                rankingClubs.add(rankingClubMap)
-            }
-        }
+        val leagueClubs = federation.clubs.toMutableList()
+        val rankingClubs = countryToClubsToRankMap[federation.name]!!.toList().toMutableList()
 
         var notMatched = matchTeamNames(rankingClubs, leagueClubs, ::isItSpecialMatch)
         notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSame)
@@ -93,22 +63,19 @@ private fun getClubsRank() {
 }
 
 private fun matchTeamNames(
-    rankClubs: MutableList<MutableMap<String, String>>,
+    rankClubs: MutableList<Pair<String, HashMap<String, Double>>>,
     leagueClubs: MutableList<Team>,
     matchMethod: (name1: String, name2: String) -> Boolean
-): MutableList<MutableMap<String, String>> {
-    val rankingClubNotMatched = mutableListOf<MutableMap<String, String>>()
-    rankClubs.forEach { rankingClubMap ->
-        val matches = leagueClubs.filter { matchMethod(it.name, rankingClubMap["name"]!!) }
+): MutableList<Pair<String, HashMap<String, Double>>> {
+    val rankingClubNotMatched = mutableListOf<Pair<String, HashMap<String, Double>>>()
+    rankClubs.forEach { rankingClubPair ->
+        val matches = leagueClubs.filter { matchMethod(it.name, rankingClubPair.first) }
         if (matches.size != 1) {
-            rankingClubNotMatched.add(rankingClubMap)
+            rankingClubNotMatched.add(rankingClubPair)
         } else {
             leagueClubs.remove(matches[0])
-            rankingClubMap.remove("name")
-            rankingClubMap.forEach {
-                val season = it.key
-                val seasonRank = it.value.replace(",", ".").toDouble()
-                matches[0].ranking.assignPointsForSeason(season, seasonRank)
+            rankingClubPair.second.forEach {
+                matches[0].ranking.assignPointsForSeason(it.key, it.value)
             }
         }
     }
