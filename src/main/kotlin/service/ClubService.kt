@@ -1,13 +1,13 @@
 package org.example.service
 
 import org.example.init.PRINTING_ID_TAB
-import org.example.init.federations
+import org.example.init.initializedFederations
 import org.example.init.model.Club
 import org.example.init.model.UefaRankingPoints
 
 
 class ClubService() {
-    private val clubs = federations.map { it.clubs }.flatten()
+    private val clubs = initializedFederations.map { it.clubs }.flatten()
 
 
     fun printClubRanking() {

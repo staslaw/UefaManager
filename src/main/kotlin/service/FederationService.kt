@@ -1,12 +1,13 @@
 package org.example.service
 
 import org.example.init.PRINTING_ID_TAB
+import org.example.init.initializedFederations
 import org.example.init.model.Federation
 import org.example.init.model.UefaRankingPoints
 
 
 class FederationService() {
-    private val federations = org.example.init.federations
+    private val federations = initializedFederations
 
     fun printFederations() {
         federations.forEach { println(it.name) }

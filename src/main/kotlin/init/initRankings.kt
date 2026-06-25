@@ -12,11 +12,9 @@ const val countryRank22to26Path = "http://www.90minut.pl/ranking_uefa.php?id_sez
 const val clubRank22to26Path = "http://www.90minut.pl/ranking_uefa.php?i=1&id_sezon=107"
 
 
-fun init() {
-    println("PRZYGOTOWANIE GRY ROZPOCZĘTE")
+fun initRankings() {
     getFederationsRank()
     getClubsRank()
-    println("PRZYGOTOWANIE GRY ZAKOŃCZONE")
 }
 
 private fun getFederationsRank() {
@@ -27,7 +25,7 @@ private fun getFederationsRank() {
 private fun getFederationsRankFromLink(link: String) {
     val parser = FederationRankingHtmlParser(link)
     val countryToRanksMap = parser.getFederationsRankMapFromLink()
-    for (federation in federations) {
+    for (federation in initializedFederations) {
         countryToRanksMap[federation.name]?.let { rankMap ->
             for (rank in rankMap.entries) {
                 federation.ranking.assignPointsForSeason(rank.key, rank.value)
@@ -41,7 +39,7 @@ private fun getClubsRank() {
     val countryToClubsToRankMap = parser.getCountryToClubsToRankMapFromLink()
 
     val allNotMatched = mutableListOf<Pair<String, HashMap<String, Double>>>()
-    for (federation in federations) {
+    for (federation in initializedFederations) {
         val leagueClubs = federation.clubs.toMutableList()
         val rankingClubs = countryToClubsToRankMap[federation.name]!!.toList().toMutableList()
 

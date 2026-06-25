@@ -1,6 +1,6 @@
 package org.example
 
-import org.example.init.init
+import org.example.init.initRankings
 import org.example.service.UIService
 import java.util.Scanner
 
@@ -10,9 +10,8 @@ val uiService = UIService()
 
 
 fun main() {
-    println("====================")
-    println("====================")
-    init()
+    initRankings()
+    println("PRZYGOTOWANIE GRY ZAKOŃCZONE")
     println("====================")
     println("ROZPOCZYNAMY GRĘ!!!")
     uiService.printCurrentSeason()
