@@ -1,4 +1,4 @@
-package org.example.init
+package org.example.init.utils
 
 
 const val transfermarktBaseLink = "https://www.transfermarkt.pl"

@@ -1,6 +1,6 @@
 package org.example.model
 
-import org.example.init.PRINTING_NAME_TAB
+import org.example.init.utils.PRINTING_NAME_TAB
 
 
 class Club(val name: String, val link: String, val value: String) {

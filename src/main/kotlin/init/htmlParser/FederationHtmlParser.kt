@@ -1,24 +1,19 @@
 package org.example.init.htmlParser
 
+import org.example.init.utils.getHtmlJsoupDocument
 import org.example.model.League
-import org.example.init.transfermarktBaseLink
-import org.jsoup.Jsoup
+import org.example.init.utils.transfermarktBaseLink
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
 
 class FederationHtmlParser(private val link: String, private val federationName: String) {
-    private val html: Document = getHtmlJsoupDocument()
+    private val html: Document = getHtmlJsoupDocument(link)
     private val leagueTableRows: Elements? = getLeagueTableRows()
     private val firstLeague: League? = parseHtmlToFirstLeague()
     private val secondLeague: League? = parseHtmlToSecondLeague()
 
-
-    private fun getHtmlJsoupDocument(): Document {
-        println("Pobieram dane: ${this.federationName}")
-        return Jsoup.connect(this.link).get()
-    }
 
     private fun getLeagueTableRows(): Elements? {
         return html.getElementById("yw1")?.let { div ->

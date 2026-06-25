@@ -1,14 +1,15 @@
 package org.example.init
 
+import org.example.init.utils.transfermarktBaseLinkNational
 import org.example.model.Federation
 
 
 val initializedFederations = listOf(
 //    Federation("Anglia", "$transfermarktBaseLinkNational/189"),
 //    Federation("Włochy", "$transfermarktBaseLinkNational/75"),
-    Federation("Hiszpania", "$transfermarktBaseLinkNational/157"),
-    Federation("Niemcy", "$transfermarktBaseLinkNational/40"),
-    Federation("Francja", "$transfermarktBaseLinkNational/50"),
+    Federation("Hiszpania", "${transfermarktBaseLinkNational}/157"),
+    Federation("Niemcy", "${transfermarktBaseLinkNational}/40"),
+    Federation("Francja", "${transfermarktBaseLinkNational}/50"),
 //    Federation("Holandia", "$transfermarktBaseLinkNational/122"),
 //    Federation("Portugalia", "$transfermarktBaseLinkNational/136"),
 //    Federation("Belgia", "$transfermarktBaseLinkNational/19"),

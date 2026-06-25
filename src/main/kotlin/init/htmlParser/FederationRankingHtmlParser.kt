@@ -1,16 +1,11 @@
 package org.example.init.htmlParser
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import org.example.init.utils.getHtmlJsoupDocument
 
 
 class FederationRankingHtmlParser(private val link: String) {
-    private val html = getHtmlJsoupDocument()
+    private val html = getHtmlJsoupDocument(link)
 
-
-    private fun getHtmlJsoupDocument(): Document {
-        return Jsoup.connect(this.link).get()
-    }
 
     fun getFederationsRankMapFromLink(): HashMap<String, HashMap<String, Double>> {
         val countryTable = html.select("table").first()

@@ -1,6 +1,6 @@
 package org.example.service
 
-import org.example.init.PRINTING_ID_TAB
+import org.example.init.utils.PRINTING_ID_TAB
 import org.example.init.initializedFederations
 import org.example.model.Club
 import org.example.model.UefaRankingPoints

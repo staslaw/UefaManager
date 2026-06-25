@@ -1,10 +1,9 @@
 package org.example.model
 
-import org.example.init.PRINTING_RANK_YEAR_COLUMN_TAB
-import org.example.init.PRINTING_RANK_YEAR_TAB
+import org.example.init.utils.PRINTING_RANK_YEAR_COLUMN_TAB
+import org.example.init.utils.PRINTING_RANK_YEAR_TAB
 import org.example.service.SeasonService
 import kotlin.collections.ArrayList
-import kotlin.collections.indexOf
 
 
 class UefaRankingPoints() {
