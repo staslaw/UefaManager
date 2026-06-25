@@ -1,19 +1,19 @@
 package org.example.service
 
-import org.example.init.addNewSeason
-import org.example.init.currentSeason
-
 
 class UIService() {
     private val federationService = FederationService()
     private val clubService = ClubService()
+    private val seasonService = SeasonService()
+
 
     fun printCurrentSeason() {
-        println("Aktualny sezon to: $currentSeason")
+        seasonService.printCurrentSeason()
     }
 
     fun addSeason() {
-        addNewSeason()
+        seasonService.addNewSeason()
+        federationService.addNewSeason()
     }
 
     fun printFederations() {
@@ -25,7 +25,11 @@ class UIService() {
     }
 
     fun printFederationRanking(season: String) {
-        federationService.printFederationRanking(season)
+        if (seasonService.checkIfSeasonExists(season)) {
+            federationService.printFederationRanking(season)
+        } else {
+            println("Nie ma takiego sezonu w bazie.")
+        }
     }
 
     fun printClubRanking() {

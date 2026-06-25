@@ -21,7 +21,7 @@ class Federation(val name: String, val link: String) {
 
     fun addNewSeason() {
         this.ranking.initNewSeason()
-        this.firstLeague?.clubs?.forEach { it.addNewSeason() }
+        this.clubs.forEach { it.addNewSeason() }
     }
 
     fun getRankingSummaryLine(forSeason: String): String {

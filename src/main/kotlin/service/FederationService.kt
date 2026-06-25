@@ -3,7 +3,7 @@ package org.example.service
 import org.example.init.PRINTING_ID_TAB
 import org.example.init.model.Federation
 import org.example.init.model.UefaRankingPoints
-import org.example.init.seasons
+
 
 class FederationService() {
     private val federations = org.example.init.federations
@@ -22,11 +22,7 @@ class FederationService() {
     }
 
     fun printFederationRanking(season: String) {
-        if (seasons.contains(season)) {
-            printRankingList(season)
-        } else {
-            println("Nie ma takiego sezonu w bazie.")
-        }
+        printRankingList(season)
     }
 
     private fun printRankingList(forSeason: String) {
@@ -46,5 +42,9 @@ class FederationService() {
                 .thenByDescending { it.ranking.getCurrentSeasonPoints(forSeason) }
                 .thenByDescending { it.ranking.getPreviousSeasonPoints(forSeason) }
             )
+    }
+
+    fun addNewSeason() {
+        federations.forEach { it.addNewSeason() }
     }
 }
