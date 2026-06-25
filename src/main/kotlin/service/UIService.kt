@@ -24,6 +24,10 @@ class UIService() {
         federationService.printFederationSummary(federationName)
     }
 
+    fun printAvailableSeasonsForRanking() {
+        seasonService.printAllSeasons()
+    }
+
     fun printFederationRanking(season: String) {
         if (seasonService.checkIfSeasonExists(season)) {
             federationService.printFederationRanking(season)

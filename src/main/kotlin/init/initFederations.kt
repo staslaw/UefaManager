@@ -4,8 +4,8 @@ import org.example.model.Federation
 
 
 val initializedFederations = listOf(
-    Federation("Anglia", "$transfermarktBaseLinkNational/189"),
-    Federation("Włochy", "$transfermarktBaseLinkNational/75"),
+//    Federation("Anglia", "$transfermarktBaseLinkNational/189"),
+//    Federation("Włochy", "$transfermarktBaseLinkNational/75"),
     Federation("Hiszpania", "$transfermarktBaseLinkNational/157"),
     Federation("Niemcy", "$transfermarktBaseLinkNational/40"),
     Federation("Francja", "$transfermarktBaseLinkNational/50"),
