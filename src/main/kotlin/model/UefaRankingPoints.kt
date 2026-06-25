@@ -31,7 +31,7 @@ class UefaRankingPoints() {
         seasonPoints.add(UefaSeasonPoints(newSeason, 0.0))
     }
 
-    fun getFiveYearsRanking(forSeason: String? = SeasonService.getCurrentSeason()): Double {
+    fun getFiveYearsRanking(forSeason: String): Double {
         var sum = 0.0
         val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
         val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
@@ -41,18 +41,18 @@ class UefaRankingPoints() {
         return sum
     }
 
-    fun getCurrentSeasonPoints(forSeason: String? = SeasonService.getCurrentSeason()): Double {
-        val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
+    fun getCurrentSeasonPoints(season: String): Double {
+        val seasonIndex = SeasonService.getSeasons().indexOf(season)
         return this.seasonPoints[seasonIndex].seasonRank
     }
 
-    fun getPreviousSeasonPoints(forSeason: String? = SeasonService.getCurrentSeason()): Double {
-        val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
+    fun getPreviousSeasonPoints(season: String): Double {
+        val seasonIndex = SeasonService.getSeasons().indexOf(season)
         val previousSeasonIndex = if (seasonIndex == 0) 0 else seasonIndex - 1
         return this.seasonPoints[previousSeasonIndex].seasonRank
     }
 
-    fun getRankingSummaryLine(forSeason: String? = SeasonService.getCurrentSeason()): String {
+    fun getRankingSummaryLine(forSeason: String): String {
         var line = ""
         val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
         val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
@@ -68,10 +68,10 @@ class UefaRankingPoints() {
     }
 
     companion object {
-        fun getRankingHeader(forSeason: String? = SeasonService.getCurrentSeason()): String {
+        fun getRankingHeader(season: String): String {
             var header = ""
             for (i in 0..< PRINTING_RANK_YEAR_TAB) header = "$header "
-            val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
+            val seasonIndex = SeasonService.getSeasons().indexOf(season)
             val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
             for (i in lastSeasonIndex..seasonIndex) {
                 val season = SeasonService.getSeasons()[i]

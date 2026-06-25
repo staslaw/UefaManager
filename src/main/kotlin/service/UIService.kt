@@ -36,7 +36,11 @@ class UIService() {
         }
     }
 
-    fun printClubRanking() {
-        clubService.printClubRanking()
+    fun printClubRanking(season: String) {
+        if (seasonService.checkIfSeasonExists(season)) {
+            clubService.printClubRanking(season)
+        } else {
+            println("Nie ma takiego sezonu w bazie.")
+        }
     }
 }

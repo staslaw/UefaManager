@@ -24,10 +24,10 @@ class Federation(val name: String, val link: String) {
         this.clubs.forEach { it.addNewSeason() }
     }
 
-    fun getRankingSummaryLine(forSeason: String): String {
+    fun getRankingSummaryLine(season: String): String {
         var line = this.name
         for (i in line.length..< PRINTING_NAME_TAB) line = "$line "
-        val pointsLine = this.ranking.getRankingSummaryLine(forSeason)
+        val pointsLine = this.ranking.getRankingSummaryLine(season)
         return "$line$pointsLine"
     }
 

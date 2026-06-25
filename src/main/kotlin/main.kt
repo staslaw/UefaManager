@@ -54,8 +54,9 @@ private fun showFederationRanking() {
 
 private fun showClubRanking() {
     println("====================")
-    println("RANKING KLUBÓW")
-    uiService.printClubRanking()
+    println("Podaj sezon dla którego chcesz zobaczyć ranking i wciśnij 'ENTER'. Dostępne sezony:")
+    uiService.printAvailableSeasonsForRanking()
+    uiService.printClubRanking(scan.nextLine().trim())
     showMainMenu()
 }
 

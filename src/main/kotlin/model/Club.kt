@@ -17,9 +17,9 @@ class Club(val name: String, val link: String, val value: String) {
         return "${this.getNameWithTab()} ${this.value}"
     }
 
-    fun rankSummary(): String {
+    fun rankSummary(season: String): String {
         val line = this.getNameWithTab()
-        val pointsLine = this.ranking.getRankingSummaryLine()
+        val pointsLine = this.ranking.getRankingSummaryLine(season)
         return "$line$pointsLine"
     }
 

@@ -23,25 +23,21 @@ class FederationService() {
     }
 
     fun printFederationRanking(season: String) {
-        printRankingList(season)
-    }
-
-    private fun printRankingList(forSeason: String) {
-        println(UefaRankingPoints.getRankingHeader(forSeason))
-        val sortedFederations = sortFederations(forSeason)
+        println(UefaRankingPoints.getRankingHeader(season))
+        val sortedFederations = sortFederations(season)
         for (i in 1..sortedFederations.size) {
-            val federationString = sortedFederations[i - 1].getRankingSummaryLine(forSeason)
+            val federationString = sortedFederations[i - 1].getRankingSummaryLine(season)
             var line = "$i."
             for (i in line.length..< PRINTING_ID_TAB) line = "$line "
             println("$line$federationString")
         }
     }
 
-    private fun sortFederations(forSeason: String): List<Federation> {
+    private fun sortFederations(season: String): List<Federation> {
         return ArrayList(this.federations)
-            .sortedWith(compareByDescending<Federation> { it.ranking.getFiveYearsRanking(forSeason) }
-                .thenByDescending { it.ranking.getCurrentSeasonPoints(forSeason) }
-                .thenByDescending { it.ranking.getPreviousSeasonPoints(forSeason) }
+            .sortedWith(compareByDescending<Federation> { it.ranking.getFiveYearsRanking(season) }
+                .thenByDescending { it.ranking.getCurrentSeasonPoints(season) }
+                .thenByDescending { it.ranking.getPreviousSeasonPoints(season) }
             )
     }
 
