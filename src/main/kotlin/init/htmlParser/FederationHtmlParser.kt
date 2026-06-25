@@ -1,6 +1,6 @@
 package org.example.init.htmlParser
 
-import org.example.init.model.League
+import org.example.model.League
 import org.example.init.transfermarktBaseLink
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

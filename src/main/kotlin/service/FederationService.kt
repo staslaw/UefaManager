@@ -2,8 +2,8 @@ package org.example.service
 
 import org.example.init.PRINTING_ID_TAB
 import org.example.init.initializedFederations
-import org.example.init.model.Federation
-import org.example.init.model.UefaRankingPoints
+import org.example.model.Federation
+import org.example.model.UefaRankingPoints
 
 
 class FederationService() {

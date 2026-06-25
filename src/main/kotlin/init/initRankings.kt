@@ -2,7 +2,7 @@ package org.example.init
 
 import org.example.init.htmlParser.FederationRankingHtmlParser
 import org.example.init.htmlParser.ClubRankingHtmlParser
-import org.example.init.model.Club
+import org.example.model.Club
 import kotlin.math.abs
 import kotlin.math.min
 

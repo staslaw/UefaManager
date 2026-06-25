@@ -1,6 +1,6 @@
 package org.example.init
 
-import org.example.init.model.Federation
+import org.example.model.Federation
 
 
 val initializedFederations = listOf(

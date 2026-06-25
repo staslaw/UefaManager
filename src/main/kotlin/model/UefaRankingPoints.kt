@@ -1,4 +1,4 @@
-package org.example.init.model
+package org.example.model
 
 import org.example.init.PRINTING_RANK_YEAR_COLUMN_TAB
 import org.example.init.PRINTING_RANK_YEAR_TAB
