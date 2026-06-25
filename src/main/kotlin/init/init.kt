@@ -60,7 +60,7 @@ private fun getClubsRank() {
 
     val allNotMatched = mutableListOf<MutableMap<String, String>>()
     for (federation in federations) {
-        val leagueTeams = federation.league?.teams?: emptyList()
+        val leagueTeams = federation.clubs
         val leagueClubs = leagueTeams.toMutableList()
         val rankingClubs = mutableListOf<MutableMap<String, String>>()
         for (i in 1..< rows.size) {
@@ -78,7 +78,8 @@ private fun getClubsRank() {
             }
         }
 
-        var notMatched = matchTeamNames(rankingClubs, leagueClubs, ::isTheSame)
+        var notMatched = matchTeamNames(rankingClubs, leagueClubs, ::isItSpecialMatch)
+        notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSame)
         notMatched = matchTeamNames(notMatched, leagueClubs, ::containsOrContainsParts)
         notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSameWithChangedChars)
         notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSameFiltered)
@@ -86,7 +87,6 @@ private fun getClubsRank() {
         notMatched = matchTeamNames(notMatched, leagueClubs, ::containsOrContainsPartFiltered)
         notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSameFilteredWithChangedChars)
         notMatched = matchTeamNames(notMatched, leagueClubs, ::containsFilteredWithChangedChars)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::isItSpecialMatch)
         allNotMatched.addAll(notMatched)
     }
     println("${allNotMatched.size} klubów niedopasowanych z rankingiem")
@@ -234,43 +234,41 @@ private fun isItSpecialMatch(name1: String, name2: String): Boolean {
         "Torpiedo Żodzino" to "Torpedo-BelAZ Zhodino",
         "FK Brześć" to "Dynamo Brest",
         "NK Željezničar (Sarajewo)" to "FK Zeljeznicar Sarajevo",
+        // tu się zaczynają konflikty po dodaniu drugich lig
+        "Club Brugge KV" to "FC Brügge",
+        "FK Budućnost (Podgorica)" to "Buducnost Podgorica",
+        "Isłocz Minskij rajon" to "Isloch Minsk Region",
+        "FC Salzburg" to "Red Bull Salzburg",
+        "Maccabi Hajfa" to "Maccabi Haifa",
+        "KR (Reykjavík)" to "KR Reykjavík",
+        // tu się zaczynają konflikty z drużyną rezerw
+        "AZ (Alkmaar)" to "AZ Alkmaar",
+        "AFC Ajax" to "Ajax Amsterdam",
+        "SL e Benfica" to "Benfika Lizbona",
+        "Olympiakós SFP (Pireus)" to "Olympiakos Pireus",
+        "PAOK" to "PAOK Saloniki",
+        "Maccabi Petach Tikwa" to "Maccabi Petah Tikva",
+        "Noa Erewan" to "FC Noah Erewan",
+        "Ararat-Armenia Erewan" to "FC Ararat-Armenia",
+        "HJK" to "HJK Helsinki",
+        "Seinäjoen JK" to "SJK Seinäjoki",
+        "Hegelmann Kowno" to "FC Hegelmann",
+        "Transinvest Wilno" to "FK TransINVEST",
     )
     return map[name1] == name2 || map[name2] == name1
 }
-// BŁĘDY
-// Isłocz Minskij rajon - FK Minsk      ---> Isloch Minsk Region
+// Vaduz?
 
-// FK Podgorica - Buducnost Podgorica   ---> spadło (może dodanie drugiej ligi pomoże)
-// FK Budu�nost (Podgorica) - NULL      ---> Buducnost Podgorica
-
-// FC Haka - IFK Mariehamn              ---> FC HAKA spadło (może dodanie drugiej ligi pomoże) FIN
-
-// SPADKOWICZE
-// Leicester City FC            - spadło
-// SBV Vitesse                  - spadło
-// FC Pa�os de Ferreira         - spadło
-// Sivasspor Kul�b�             - spadło
-// Adana Demirspor Kul�b�       - spadło
-// Saint Johnstone FC           - spadło
-// �l�sk Wroc�aw                - spadło
-// Wis�a Krak�w                 - spadło
-// Maccabi Petach Tikwa         - spadło
-// Dnipro-1 Dniepropietrowsk    - spadło/ klub przestał istnieć
-// FC Feh�rv�r                  - spadło i zmieniło nazwę na Videoton FC
-// Kecskem�ti TE                - spadło
-// Sepsi OSK Sf�ntu Gheorghe    - spadło
-// Corvinul Hunedoara           - spadło
+// Dnipro-1 Dniepropietrowsk    - klub przestał istnieć
 // FC Sfîntul Gheorghe Suruceni - klub przestał istnieć
-// FK Tuzla City (Simin Han)    - spadło
-// Valmiera FC                  - spadło
-// Tampere United               - spadło
-// FC Honka                     - spadło
-// Szachtior Karaganda          - spadło
-// Balzan FC                    - spadło
-// JK Tallinna Kalev            - spadło
-// KF Laçi                      - spadło
-// FK Iskra (Danilovgrad)       - spadło
-// CS Fola Esch                 - spadło
-// Newtown AFC                  - spadło
-// Szachtior Soligorsk          - spadło
-// UE Sant Julià               - nie istnieje
+// FK Tuzla City (Simin Han)    - spadło - liga pominięta (Bośnia)
+// Valmiera FC                  - spadło - liga pominięta (Łotwa)
+// Tampere United               - spadło - liga pominięta (3 poziom, Finlandia)
+// FC Honka                     - spadło - liga pominięta (4 poziom, Finlandia)
+// Balzan FC                    - spadło - liga pominięta (Malta)
+// JK Tallinna Kalev            - spadło - liga pominięta (Estonia)
+// FK Iskra (Danilovgrad)       - spadło - liga pominięta (Czarnogóra)
+// FK Podgorica                 - spadło - liga pominięta (Czarnogóra)
+// CS Fola Esch                 - spadło - liga pominięta (Luxemburg)
+// Newtown AFC                  - spadło - liga pominięta (Walia)
+// UE Sant Julià                - klub przestał istnieć

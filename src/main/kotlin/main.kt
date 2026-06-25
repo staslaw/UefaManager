@@ -5,7 +5,6 @@ import org.example.init.addNewSeason
 import org.example.init.currentSeason
 import org.example.init.federations
 import org.example.init.init
-import org.example.init.model.Federation
 import org.example.init.model.Team
 import org.example.init.model.UefaRankingPoints
 import org.example.init.printRankingList
@@ -27,7 +26,7 @@ fun main() {
 private fun showMainMenu() {
     println("====================")
     println("Wybierz opcję i wciśnij 'ENTER':")
-    println("1 - wyświetl listę federacji")
+    println("1 - wyświetl rozgrywki krajowe")
     println("2 - wyświetl ranking federacji")
     println("3 - wyświetl ranking klubowy")
     println("4 - dodaj nowy sezon")
@@ -74,7 +73,7 @@ private fun showFederations() {
 private fun showClubRanking() {
     println("====================")
     println("RANKING KLUBÓW")
-    val teams = federations.map { it.league?.teams ?: emptyList() }.flatten()
+    val teams = federations.map { it.firstLeague?.teams ?: emptyList() }.flatten()
     val ranked = teams.filter { it.ranking.getFiveYearsRanking() != 0.0 }
     println("TEAMS: ${teams.size}, RANKED: ${ranked.size}")
     println(UefaRankingPoints.getRankingHeader())

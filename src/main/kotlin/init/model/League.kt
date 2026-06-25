@@ -4,10 +4,11 @@ import org.example.init.transfermarktBaseLink
 import org.jsoup.Jsoup
 
 
-class League(val name: String, val link: String) {
+class League(val name: String, val competitionLevel: Int, val link: String) {
     val teams: List<Team> = initTeams()
 
     private fun initTeams(): List<Team> {
+        println("---   init league: ${this.name} (level $competitionLevel)")
         val doc = Jsoup.connect(this.link).get()
         val div = doc.getElementById("yw1")
         val teamRows = div!!.select("tbody")[0].select("tr")
