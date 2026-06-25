@@ -9,19 +9,19 @@ class Federation(val name: String, val link: String) {
     val firstLeague: League? = htmlParser.getFirstLeague()
     val secondLeague: League? = htmlParser.getSecondLeague()
     val ranking: UefaRankingPoints = UefaRankingPoints()
-    val clubs: List<Team> = getClubsFromLeagues()
+    val clubs: List<Club> = getClubsFromLeagues()
 
 
-    private fun getClubsFromLeagues(): List<Team> {
-        val clubsList = mutableListOf<Team>()
-        clubsList.addAll(this.firstLeague?.teams ?: emptyList())
-        clubsList.addAll(this.secondLeague?.teams ?: emptyList())
+    private fun getClubsFromLeagues(): List<Club> {
+        val clubsList = mutableListOf<Club>()
+        clubsList.addAll(this.firstLeague?.clubs ?: emptyList())
+        clubsList.addAll(this.secondLeague?.clubs ?: emptyList())
         return clubsList
     }
 
     fun addNewSeason() {
         this.ranking.initNewSeason()
-        this.firstLeague?.teams?.forEach { it.addNewSeason() }
+        this.firstLeague?.clubs?.forEach { it.addNewSeason() }
     }
 
     fun getRankingSummaryLine(forSeason: String): String {
@@ -35,14 +35,14 @@ class Federation(val name: String, val link: String) {
         println("=====     ${this.name} - PODSUMOWANIE     =====")
         this.firstLeague?.let { league ->
             println("1 LIGA: ${league.name}")
-            league.teams.forEach { team ->
-                println(team.getTeamInfoLine())
+            league.clubs.forEach { club ->
+                println(club.getClubInfoLine())
             }
         }
         this.secondLeague?.let { league ->
             println("2 LIGA: ${league.name}")
-            league.teams.forEach { team ->
-                println(team.getTeamInfoLine())
+            league.clubs.forEach { club ->
+                println(club.getClubInfoLine())
             }
         }
         println("=====     KONIEC PODSUMOWANIA     =====")

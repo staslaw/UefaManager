@@ -2,10 +2,7 @@ package org.example.init
 
 import org.example.init.htmlParser.FederationRankingHtmlParser
 import org.example.init.htmlParser.ClubRankingHtmlParser
-import org.example.init.model.Team
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import java.util.LinkedList
+import org.example.init.model.Club
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -48,23 +45,23 @@ private fun getClubsRank() {
         val leagueClubs = federation.clubs.toMutableList()
         val rankingClubs = countryToClubsToRankMap[federation.name]!!.toList().toMutableList()
 
-        var notMatched = matchTeamNames(rankingClubs, leagueClubs, ::isItSpecialMatch)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSame)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::containsOrContainsParts)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSameWithChangedChars)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSameFiltered)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::containsWithChangedChars)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::containsOrContainsPartFiltered)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::isTheSameFilteredWithChangedChars)
-        notMatched = matchTeamNames(notMatched, leagueClubs, ::containsFilteredWithChangedChars)
+        var notMatched = matchClubNames(rankingClubs, leagueClubs, ::isItSpecialMatch)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::isTheSame)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::containsOrContainsParts)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::isTheSameWithChangedChars)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::isTheSameFiltered)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::containsWithChangedChars)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::containsOrContainsPartFiltered)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::isTheSameFilteredWithChangedChars)
+        notMatched = matchClubNames(notMatched, leagueClubs, ::containsFilteredWithChangedChars)
         allNotMatched.addAll(notMatched)
     }
     println("${allNotMatched.size} klubów niedopasowanych z rankingiem")
 }
 
-private fun matchTeamNames(
+private fun matchClubNames(
     rankClubs: MutableList<Pair<String, HashMap<String, Double>>>,
-    leagueClubs: MutableList<Team>,
+    leagueClubs: MutableList<Club>,
     matchMethod: (name1: String, name2: String) -> Boolean
 ): MutableList<Pair<String, HashMap<String, Double>>> {
     val rankingClubNotMatched = mutableListOf<Pair<String, HashMap<String, Double>>>()

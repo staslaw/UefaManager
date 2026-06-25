@@ -3,8 +3,9 @@ package org.example.init.model
 import org.example.init.PRINTING_NAME_TAB
 
 
-class Team(val name: String, val link: String, val value: String) {
+class Club(val name: String, val link: String, val value: String) {
     val ranking: UefaRankingPoints = UefaRankingPoints()
+
 
     fun getNameWithTab(): String {
         var line = this.name
@@ -12,7 +13,7 @@ class Team(val name: String, val link: String, val value: String) {
         return line
     }
 
-    fun getTeamInfoLine(): String {
+    fun getClubInfoLine(): String {
         return "${this.getNameWithTab()} ${this.value}"
     }
 
