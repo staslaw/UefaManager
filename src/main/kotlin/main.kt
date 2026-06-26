@@ -24,13 +24,13 @@ private fun showMainMenu() {
     println("1 - wyświetl rozgrywki krajowe")
     println("2 - wyświetl ranking federacji")
     println("3 - wyświetl ranking klubowy")
-    println("4 - dodaj nowy sezon")
+//    println("4 - dodaj nowy sezon")
     println("inne - wyjście")
     when(scan.nextLine().trim()) {
         "1" -> showFederations()
         "2" -> showFederationRanking()
         "3" -> showClubRanking()
-        "4" -> addSeason()
+//        "4" -> addSeason()
         else -> println("KONIEC GRY")
     }
 }
@@ -40,7 +40,39 @@ private fun showFederations() {
     uiService.printFederations()
     println("====================")
     println("Podaj nazwę federacji którą chcesz zobaczyć i wciśnij 'ENTER'")
-    uiService.printFederationSummary(scan.nextLine().trim())
+    val federationName = uiService.printFederationSummary(scan.nextLine().trim())
+    if (federationName.isEmpty()) {
+        showMainMenu()
+    } else {
+        showFederationMenu(federationName)
+    }
+}
+
+private fun showFederationMenu(federationName: String) {
+    println("====================")
+    val seasons = uiService.getAvailableSeasonsForFederation(federationName)
+    println(seasons)
+    println("Wybierz dostępny sezon i wciśnij 'ENTER':")
+    val chosenSeason = scan.nextLine().trim()
+    if (seasons.contains(chosenSeason)) {
+        showSeasonMenu(chosenSeason, federationName)
+    } else {
+        println("Ten sezon nie jest dostępny")
+        showMainMenu()
+    }
+}
+
+private fun showSeasonMenu(chosenSeason: String, federationName: String) {
+    println("====================")
+    val leagues = uiService.getAvailableLeagues(chosenSeason, federationName)
+    println(leagues)
+    println("Wybierz dostępną ligę i wciśnij 'ENTER':")
+    val chosenLeague = scan.nextLine().trim()
+    if (leagues.contains(chosenLeague)) {
+        uiService.printLeagueSummary(federationName, chosenLeague, chosenSeason)
+    } else {
+        println("Ta liga nie jest dostępna")
+    }
     showMainMenu()
 }
 

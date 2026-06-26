@@ -20,8 +20,8 @@ class UIService() {
         federationService.printFederations()
     }
 
-    fun printFederationSummary(federationName: String) {
-        federationService.printFederationSummary(federationName)
+    fun printFederationSummary(federationName: String): String {
+        return federationService.printFederationSummary(federationName)
     }
 
     fun printAvailableSeasonsForRanking() {
@@ -42,5 +42,17 @@ class UIService() {
         } else {
             println("Nie ma takiego sezonu w bazie.")
         }
+    }
+
+    fun getAvailableSeasonsForFederation(federationName: String): List<String> {
+        return federationService.getAvailableSeasonsForFederation(federationName)
+    }
+
+    fun getAvailableLeagues(chosenSeason: String, federationName: String): List<String> {
+        return federationService.getAvailableLeagues(chosenSeason, federationName)
+    }
+
+    fun printLeagueSummary(federationName: String, chosenLeague: String, chosenSeason: String) {
+        return federationService.printLeagueSummary(federationName, chosenLeague, chosenSeason)
     }
 }

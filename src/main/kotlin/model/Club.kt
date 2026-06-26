@@ -3,7 +3,7 @@ package org.example.model
 import org.example.init.utils.PRINTING_NAME_TAB
 
 
-class Club(val name: String, val link: String, val value: String) {
+class Club(val name: String, var link: String, val value: String) {
     val ranking: UefaRankingPoints = UefaRankingPoints()
 
 

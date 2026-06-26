@@ -11,19 +11,19 @@ class UefaRankingPoints() {
 
 
     init {
-        for (season in SeasonService.getSeasons()) {
+        for (season in SeasonService.getEuropeanSeasons()) {
             seasonPoints.add(UefaSeasonPoints(season, 0.0))
         }
     }
 
     fun assignPointsForSeason(season: String, assignValue: Double) {
-        val seasonIndex = SeasonService.getSeasons().indexOf(season)
+        val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(season)
         seasonPoints[seasonIndex].seasonRank = assignValue
     }
 
     fun initNewSeason() {
         val lastSeason = seasonPoints.last().season
-        val newSeason = SeasonService.getSeasons().last()
+        val newSeason = SeasonService.getEuropeanSeasons().last()
         if (lastSeason == newSeason) {
             throw Exception("Can not init new season for UefaRankingPoints class.")
         }
@@ -32,7 +32,7 @@ class UefaRankingPoints() {
 
     fun getFiveYearsRanking(forSeason: String): Double {
         var sum = 0.0
-        val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
+        val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(forSeason)
         val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
         for (i in lastSeasonIndex..seasonIndex) {
             sum += this.seasonPoints[i].seasonRank
@@ -41,19 +41,19 @@ class UefaRankingPoints() {
     }
 
     fun getCurrentSeasonPoints(season: String): Double {
-        val seasonIndex = SeasonService.getSeasons().indexOf(season)
+        val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(season)
         return this.seasonPoints[seasonIndex].seasonRank
     }
 
     fun getPreviousSeasonPoints(season: String): Double {
-        val seasonIndex = SeasonService.getSeasons().indexOf(season)
+        val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(season)
         val previousSeasonIndex = if (seasonIndex == 0) 0 else seasonIndex - 1
         return this.seasonPoints[previousSeasonIndex].seasonRank
     }
 
     fun getRankingSummaryLine(forSeason: String): String {
         var line = ""
-        val seasonIndex = SeasonService.getSeasons().indexOf(forSeason)
+        val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(forSeason)
         val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
         var fiveYearsRank = 0.0
         for (i in lastSeasonIndex..seasonIndex) {
@@ -70,10 +70,10 @@ class UefaRankingPoints() {
         fun getRankingHeader(season: String): String {
             var header = ""
             for (i in 0..< PRINTING_RANK_YEAR_TAB) header = "$header "
-            val seasonIndex = SeasonService.getSeasons().indexOf(season)
+            val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(season)
             val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
             for (i in lastSeasonIndex..seasonIndex) {
-                val season = SeasonService.getSeasons()[i]
+                val season = SeasonService.getEuropeanSeasons()[i]
                 header = "$header$season"
                 for (i in season.length..< PRINTING_RANK_YEAR_COLUMN_TAB) header = "$header "
             }

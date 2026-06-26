@@ -11,11 +11,11 @@ fun getHtmlJsoupDocument(url: String, shouldRetry: Boolean? = true): Document {
         println("Pobieram dane z: $url")
         return Jsoup.connect(url).get()
     } catch (_: IOException) {
-        println("Nie udało się pobrać danych z: $url")
         if (shouldRetry!!) {
             Thread.sleep(5000)
             return getHtmlJsoupDocument(url, false)
         } else {
+            println("Nie udało się pobrać danych z: $url")
             exitProcess(0)
         }
     }
