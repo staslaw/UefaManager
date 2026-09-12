@@ -53,7 +53,7 @@ private val federationSetup = listOf(
     FedSetup("Malta",               106,    CalendarSystem.EUROPEAN), // 1 liga nie ma aktualnego sezonu
     FedSetup("Irlandia Północna",   192,    CalendarSystem.EUROPEAN),
     FedSetup("Litwa",               98,     CalendarSystem.NORTH),
-    FedSetup("Liechtenstein",       97,     CalendarSystem.EUROPEAN),
+    FedSetup("Liechtenstein",       97,     CalendarSystem.EUROPEAN), // 1 i 2 liga nie istnieją
     FedSetup("Estonia",             47,     CalendarSystem.NORTH),
     FedSetup("Albania",             3,      CalendarSystem.EUROPEAN),
     FedSetup("Czarnogóra",          216,    CalendarSystem.EUROPEAN),
