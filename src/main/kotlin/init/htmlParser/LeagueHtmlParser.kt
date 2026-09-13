@@ -3,24 +3,24 @@ package org.example.init.htmlParser
 import org.example.init.utils.getHtmlJsoupDocument
 import org.example.model.Club
 import org.example.init.utils.transfermarktBaseLink
+import org.example.model.Federation
 import org.example.model.LeagueTable
 import org.example.model.LeagueTableRecord
+import org.example.repository.Database
 
 
-class LeagueHtmlParser(private val link: String, val existingClubs: List<Club>) {
+class LeagueHtmlParser(val federation: Federation, link: String, val existingClubs: Set<Club>) {
     private val html = getHtmlJsoupDocument(link)
     private val clubs: List<Club> = parseHtmlToClubList()
 
     private fun parseHtmlToClubList(): List<Club> {
         val div = this.html.getElementById("yw1")
         val teamRows = div!!.select("tbody")[0].select("tr")
-//        println(teamRows)
         return teamRows.map {
             val cells = it.select("td")
             val name = cells[0].select("a").attr("title")
-//            println(cells[0])
-//            println("FIND CLUB: $name")
             val link = cells[0].select("a").attr("href")
+            val id = link.split("startseite/verein/").last().split("/").first().toInt()
             val shortLink = link.substringBeforeLast("/")
             val existingClubList = existingClubs.filter { club ->
                 val exFullLink = club.link.substringBeforeLast("/")
@@ -33,7 +33,9 @@ class LeagueHtmlParser(private val link: String, val existingClubs: List<Club>) 
             } else {
                 val fullLink = "${transfermarktBaseLink}$link"
                 val value = cells.last()!!.select("a").text()
-                Club(name, fullLink, value)
+                val club = Club(id, name, fullLink, value, federation)
+                Database.transaction { session -> session.persist(club) }
+                club
             }
         }
     }

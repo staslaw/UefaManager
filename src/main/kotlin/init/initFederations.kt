@@ -81,13 +81,13 @@ private fun initFederations(): List<Federation> {
         federationSetupList.map { setup ->
             async {
                 val federation = Federation(setup.tmID, setup.name, setup.calendarSystem)
+                Database.transaction { session -> session.persist(federation) }
 
-                println("initFederation")
                 val htmlParser = FederationHtmlParser(federation.link, federation.name)
-                val clubsList = mutableListOf<Club>()
-                val previousCampaign = Campaign(SeasonService.getPreviousSeason(federation.calendarSystem), htmlParser, clubsList)
+                val clubsList = mutableSetOf<Club>()
+                val previousCampaign = Campaign(federation, SeasonService.getPreviousSeason(federation.calendarSystem), htmlParser, clubsList)
                 previousCampaign.leagues.forEach { clubsList.addAll(it.clubs) }
-                val currentCampaign = Campaign(SeasonService.getCurrentSeason(federation.calendarSystem), htmlParser, clubsList)
+                val currentCampaign = Campaign(federation, SeasonService.getCurrentSeason(federation.calendarSystem), htmlParser, clubsList)
                 clubsList.clear()
                 currentCampaign.leagues.forEach { clubsList.addAll(it.clubs) }
                 federation.clubs = clubsList
@@ -106,8 +106,6 @@ private fun initFederations(): List<Federation> {
                         }
                     }
                 }
-
-                Database.transaction { session -> session.persist(federation) }
                 federation
             }
         }.awaitAll()

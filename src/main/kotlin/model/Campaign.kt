@@ -3,7 +3,7 @@ package org.example.model
 import org.example.init.htmlParser.FederationHtmlParser
 
 
-class Campaign(val season: String, val htmlParser: FederationHtmlParser, existingClubs: List<Club>) {
+class Campaign(val federation: Federation, val season: String, val htmlParser: FederationHtmlParser, existingClubs: Set<Club>) {
     val leagues: ArrayList<League> = arrayListOf()
 
     init {
@@ -13,7 +13,7 @@ class Campaign(val season: String, val htmlParser: FederationHtmlParser, existin
         firstLeagueName?.let { name ->
             firstLeagueBaseLink?.let { link ->
                 val fullLink = "$link/plus/?saison_id=$year"
-                val firstLeague = League(name, 1, fullLink, existingClubs)
+                val firstLeague = League(this.federation, name, 1, fullLink, existingClubs)
                 this.leagues.add(firstLeague)
             }
         }
@@ -26,7 +26,7 @@ class Campaign(val season: String, val htmlParser: FederationHtmlParser, existin
                 val allClubs = mutableSetOf<Club>()
                 allClubs.addAll(existingClubs)
                 allClubs.addAll(this.leagues.firstOrNull()?.clubs ?: emptyList())
-                val secondLeague = League(name, 2, fullLink, allClubs.toList())
+                val secondLeague = League(this.federation, name, 2, fullLink, allClubs)
                 this.leagues.add(secondLeague)
             }
         }

@@ -20,6 +20,7 @@
 
         <!-- Class -->
         <mapping class="org.example.model.Federation"/>
+        <mapping class="org.example.model.Club"/>
 
     </session-factory>
 </hibernate-configuration>

@@ -2,6 +2,7 @@ package org.example.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import org.example.init.utils.CalendarSystem
 import org.example.init.utils.PRINTING_NAME_TAB
 import org.example.init.utils.transfermarktBaseLinkNational
@@ -16,8 +17,8 @@ class Federation(
     var link: String = "$transfermarktBaseLinkNational/$id",
     @Transient
     var campaigns: ArrayList<Campaign> = arrayListOf(),
-    @Transient
-    var clubs: List<Club> = listOf(),
+    @OneToMany(mappedBy = "federation")
+    var clubs: MutableSet<Club> = mutableSetOf<Club>(),
     @Transient
     var ranking: UefaRankingPoints = UefaRankingPoints()
 ) {
