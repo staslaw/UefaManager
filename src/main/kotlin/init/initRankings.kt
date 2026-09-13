@@ -70,7 +70,7 @@ private fun matchClubNames(
         } else {
             leagueClubs.remove(matches[0])
             rankingClubPair.second.forEach {
-                matches[0].ranking.assignPointsForSeason(it.key, it.value)
+                matches[0].ranking?.let { r -> r.assignPointsForSeason(it.key, it.value) }
             }
         }
     }

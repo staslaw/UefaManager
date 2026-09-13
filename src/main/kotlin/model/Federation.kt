@@ -15,10 +15,10 @@ class Federation(
     var name: String,
     var calendarSystem: CalendarSystem,
     var link: String = "$transfermarktBaseLinkNational/$id",
-    @Transient
-    var campaigns: ArrayList<Campaign> = arrayListOf(),
     @OneToMany(mappedBy = "federation")
-    var clubs: MutableSet<Club> = mutableSetOf<Club>(),
+    var campaigns: MutableSet<Campaign> = mutableSetOf(),
+    @OneToMany(mappedBy = "federation")
+    var clubs: MutableSet<Club> = mutableSetOf(),
     @Transient
     var ranking: UefaRankingPoints = UefaRankingPoints()
 ) {

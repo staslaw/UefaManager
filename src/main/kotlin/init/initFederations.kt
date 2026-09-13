@@ -85,13 +85,18 @@ private fun initFederations(): List<Federation> {
 
                 val htmlParser = FederationHtmlParser(federation.link, federation.name)
                 val clubsList = mutableSetOf<Club>()
-                val previousCampaign = Campaign(federation, SeasonService.getPreviousSeason(federation.calendarSystem), htmlParser, clubsList)
+                val previousSeason = SeasonService.getPreviousSeason(federation.calendarSystem)
+                val previousCampaign = Campaign(federation = federation, season = previousSeason, htmlParser = htmlParser)
+                Database.transaction { session -> session.persist(previousCampaign) }
                 previousCampaign.leagues.forEach { clubsList.addAll(it.clubs) }
-                val currentCampaign = Campaign(federation, SeasonService.getCurrentSeason(federation.calendarSystem), htmlParser, clubsList)
+
+                val currentSeason = SeasonService.getCurrentSeason(federation.calendarSystem)
+                val currentCampaign = Campaign(federation = federation, season = currentSeason, htmlParser = htmlParser)
+                Database.transaction { session -> session.persist(currentCampaign) }
                 clubsList.clear()
                 currentCampaign.leagues.forEach { clubsList.addAll(it.clubs) }
                 federation.clubs = clubsList
-                federation.campaigns = arrayListOf(previousCampaign, currentCampaign)
+                federation.campaigns = mutableSetOf(previousCampaign, currentCampaign)
 
                 currentCampaign.leagues.firstOrNull()?.let { currentFirstLeague ->
                     currentCampaign.leagues.getOrNull(1)?.let { currentSecondLeague ->

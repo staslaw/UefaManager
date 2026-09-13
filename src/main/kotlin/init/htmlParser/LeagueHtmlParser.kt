@@ -6,10 +6,12 @@ import org.example.init.utils.transfermarktBaseLink
 import org.example.model.Federation
 import org.example.model.LeagueTable
 import org.example.model.LeagueTableRecord
+import org.example.repository.ClubRepository
 import org.example.repository.Database
 
 
-class LeagueHtmlParser(val federation: Federation, link: String, val existingClubs: Set<Club>) {
+class LeagueHtmlParser(val federation: Federation, link: String) {
+    private val existingClubs: Set<Club> = ClubRepository.getAllClubsFromFederation(federation)
     private val html = getHtmlJsoupDocument(link)
     private val clubs: List<Club> = parseHtmlToClubList()
 

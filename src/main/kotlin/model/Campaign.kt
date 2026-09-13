@@ -1,10 +1,26 @@
 package org.example.model
 
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
 import org.example.init.htmlParser.FederationHtmlParser
 
 
-class Campaign(val federation: Federation, val season: String, val htmlParser: FederationHtmlParser, existingClubs: Set<Club>) {
-    val leagues: ArrayList<League> = arrayListOf()
+@Entity
+class Campaign(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Int? = null,
+    @ManyToOne
+    var federation: Federation,
+    var season: String,
+    @Transient
+    var htmlParser: FederationHtmlParser,
+    @Transient
+    var leagues: ArrayList<League> = arrayListOf()
+) {
 
     init {
         val year = getYear(this.season)
@@ -13,7 +29,7 @@ class Campaign(val federation: Federation, val season: String, val htmlParser: F
         firstLeagueName?.let { name ->
             firstLeagueBaseLink?.let { link ->
                 val fullLink = "$link/plus/?saison_id=$year"
-                val firstLeague = League(this.federation, name, 1, fullLink, existingClubs)
+                val firstLeague = League(this.federation, name, 1, fullLink)
                 this.leagues.add(firstLeague)
             }
         }
@@ -23,10 +39,7 @@ class Campaign(val federation: Federation, val season: String, val htmlParser: F
         secondLeagueName?.let { name ->
             secondLeagueBaseLink?.let { link ->
                 val fullLink = "$link/plus/?saison_id=$year"
-                val allClubs = mutableSetOf<Club>()
-                allClubs.addAll(existingClubs)
-                allClubs.addAll(this.leagues.firstOrNull()?.clubs ?: emptyList())
-                val secondLeague = League(this.federation, name, 2, fullLink, allClubs)
+                val secondLeague = League(this.federation, name, 2, fullLink)
                 this.leagues.add(secondLeague)
             }
         }
