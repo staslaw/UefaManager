@@ -1,41 +1,26 @@
 package org.example.model
 
-import org.example.init.htmlParser.FederationHtmlParser
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import org.example.init.utils.CalendarSystem
 import org.example.init.utils.PRINTING_NAME_TAB
-import org.example.service.SeasonService
+import org.example.init.utils.transfermarktBaseLinkNational
 
 
-class Federation(val name: String, val link: String, val calendarSystem: CalendarSystem) {
-    val campaigns: ArrayList<Campaign>
-    val clubs: List<Club>
-    val ranking: UefaRankingPoints = UefaRankingPoints()
-
-    init {
-        val htmlParser = FederationHtmlParser(this.link, this.name)
-        val clubsList = mutableListOf<Club>()
-        val previousCampaign = Campaign(SeasonService.getPreviousSeason(this.calendarSystem), htmlParser, clubsList)
-        previousCampaign.leagues.forEach { clubsList.addAll(it.clubs) }
-        val currentCampaign = Campaign(SeasonService.getCurrentSeason(this.calendarSystem), htmlParser, clubsList)
-        clubsList.clear()
-        currentCampaign.leagues.forEach { clubsList.addAll(it.clubs) }
-        this.clubs = clubsList
-        this.campaigns = arrayListOf(previousCampaign, currentCampaign)
-
-        currentCampaign.leagues.firstOrNull()?.let { currentFirstLeague ->
-            currentCampaign.leagues.getOrNull(1)?.let { currentSecondLeague ->
-                if (currentFirstLeague.clubs.containsAll(previousCampaign.leagues.first().clubs)) {
-                    println("---   ${this.name} - 1 liga nie zmieniła się pomiędzy sezonami")
-                }
-                if (currentSecondLeague.clubs.containsAll(previousCampaign.leagues[1].clubs)) {
-                    println("---   ${this.name} - 2 liga nie zmieniła się pomiędzy sezonami")
-                    val c = previousCampaign.leagues.first().clubs.plus(previousCampaign.leagues[1].clubs).minus(currentFirstLeague.clubs.toSet())
-                    currentSecondLeague.clubs = c
-                    println("---   ${this.name} - 2 liga została skompletowana dla aktualnego sezonu")
-                }
-            }
-        }
-    }
+@Entity
+class Federation(
+    @Id
+    var id: Int,
+    var name: String,
+    var calendarSystem: CalendarSystem,
+    var link: String = "$transfermarktBaseLinkNational/$id",
+    @Transient
+    var campaigns: ArrayList<Campaign> = arrayListOf(),
+    @Transient
+    var clubs: List<Club> = listOf(),
+    @Transient
+    var ranking: UefaRankingPoints = UefaRankingPoints()
+) {
 
     fun addNewSeason() {
         this.ranking.initNewSeason()
