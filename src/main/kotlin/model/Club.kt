@@ -2,6 +2,7 @@ package org.example.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
 import org.example.init.utils.PRINTING_NAME_TAB
 
@@ -15,6 +16,8 @@ class Club(
     var value: String,
     @ManyToOne
     var federation: Federation,
+    @ManyToMany
+    var leagues: MutableSet<League> = mutableSetOf(),
     @Transient
     var ranking: UefaRankingPoints = UefaRankingPoints()
 ) {

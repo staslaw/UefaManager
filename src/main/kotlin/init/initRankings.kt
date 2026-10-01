@@ -3,6 +3,7 @@ package org.example.init
 import org.example.init.htmlParser.FederationRankingHtmlParser
 import org.example.init.htmlParser.ClubRankingHtmlParser
 import org.example.model.Club
+import org.example.repository.FederationRepository
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -25,7 +26,7 @@ private fun getFederationsRank() {
 private fun getFederationsRankFromLink(link: String) {
     val parser = FederationRankingHtmlParser(link)
     val countryToRanksMap = parser.getFederationsRankMapFromLink()
-    for (federation in initializedFederations) {
+    for (federation in FederationRepository.getAllFederations()) {
         countryToRanksMap[federation.name]?.let { rankMap ->
             for (rank in rankMap.entries) {
                 federation.ranking.assignPointsForSeason(rank.key, rank.value)
@@ -39,8 +40,9 @@ private fun getClubsRank() {
     val countryToClubsToRankMap = parser.getCountryToClubsToRankMapFromLink()
 
     val allNotMatched = mutableListOf<Pair<String, HashMap<String, Double>>>()
-    for (federation in initializedFederations) {
-        val leagueClubs = federation.clubs.toMutableList()
+    for (federation in FederationRepository.getAllFederations()) {
+        val leagueClubs = federation.campaigns.flatMap { it.leagues }.flatMap { it.clubs }.toMutableList()
+//        val leagueClubs = federation.campaigns.map { it.leagues. }.lea.clubs.toMutableList()
         val rankingClubs = countryToClubsToRankMap[federation.name]!!.toList().toMutableList()
 
         var notMatched = matchClubNames(rankingClubs, leagueClubs, ::isItSpecialMatch)

@@ -1,14 +1,14 @@
 package org.example.service
 
 import org.example.init.utils.PRINTING_ID_TAB
-import org.example.init.initializedFederations
 import org.example.model.Federation
 import org.example.model.UefaRankingPoints
+import org.example.repository.FederationRepository
 import org.example.service.SeasonService.Companion.getEuropeanCurrentSeason
 
 
 class FederationService() {
-    private val federations = initializedFederations
+    private val federations = FederationRepository.getAllFederations()
 
     fun printFederations() {
         federations.forEach { println(it.name) }

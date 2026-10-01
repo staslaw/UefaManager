@@ -1,13 +1,13 @@
 package org.example.service
 
 import org.example.init.utils.PRINTING_ID_TAB
-import org.example.init.initializedFederations
 import org.example.model.Club
 import org.example.model.UefaRankingPoints
+import org.example.repository.ClubRepository
 
 
 class ClubService() {
-    private val clubs = initializedFederations.map { it.clubs }.flatten()
+    private val clubs = ClubRepository.getAllClubs()
 
 
     fun printClubRanking(season: String) {

@@ -1,19 +1,22 @@
 package org.example
 
+import org.example.init.initFederations
 import org.example.init.initRankings
 import org.example.service.UIService
 import java.util.Scanner
 
 
 val scan = Scanner(System.`in`)
-val uiService = UIService()
+lateinit var uiService: UIService
 
 
 fun main() {
+    initFederations()
     initRankings()
     println("PRZYGOTOWANIE GRY ZAKOŃCZONE")
     println("====================")
     println("ROZPOCZYNAMY GRĘ!!!")
+    uiService = UIService()
     uiService.printCurrentSeason()
     showMainMenu()
 }

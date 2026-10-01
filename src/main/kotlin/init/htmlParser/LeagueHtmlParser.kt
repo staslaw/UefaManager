@@ -4,14 +4,14 @@ import org.example.init.utils.getHtmlJsoupDocument
 import org.example.model.Club
 import org.example.init.utils.transfermarktBaseLink
 import org.example.model.Federation
+import org.example.model.League
 import org.example.model.LeagueTable
 import org.example.model.LeagueTableRecord
 import org.example.repository.ClubRepository
-import org.example.repository.Database
 
 
-class LeagueHtmlParser(val federation: Federation, link: String) {
-    private val existingClubs: Set<Club> = ClubRepository.getAllClubsFromFederation(federation)
+class LeagueHtmlParser(val federation: Federation, link: String, val league: League) {
+    private val existingClubs: Set<Club> = ClubRepository.getClubsWithLeaguesFromFederation(federation)
     private val html = getHtmlJsoupDocument(link)
     private val clubs: List<Club> = parseHtmlToClubList()
 
@@ -31,12 +31,12 @@ class LeagueHtmlParser(val federation: Federation, link: String) {
             if (existingClubList.size == 1) {
                 val club = existingClubList.first()
                 club.link = link
+                club.leagues.add(this.league)
                 club
             } else {
                 val fullLink = "${transfermarktBaseLink}$link"
                 val value = cells.last()!!.select("a").text()
-                val club = Club(id, name, fullLink, value, federation)
-                Database.transaction { session -> session.persist(club) }
+                val club = Club(id, name, fullLink, value, federation, mutableSetOf(league))
                 club
             }
         }
@@ -44,7 +44,7 @@ class LeagueHtmlParser(val federation: Federation, link: String) {
 
     fun getClubList() = this.clubs
 
-    fun getLeagueTable(existingClubs: List<Club>): LeagueTable {
+    fun getLeagueTable(existingClubs: Set<Club>): LeagueTable {
         val div = html.getElementsByClass("content-box-headline ").find { it.text().contains("Tabela") }?.parent()
         val rows = div!!.select("table").first()!!.select("tr")
         val leagueTable = mutableListOf<LeagueTableRecord>()

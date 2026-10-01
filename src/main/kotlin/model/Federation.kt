@@ -17,15 +17,13 @@ class Federation(
     var link: String = "$transfermarktBaseLinkNational/$id",
     @OneToMany(mappedBy = "federation")
     var campaigns: MutableSet<Campaign> = mutableSetOf(),
-    @OneToMany(mappedBy = "federation")
-    var clubs: MutableSet<Club> = mutableSetOf(),
     @Transient
     var ranking: UefaRankingPoints = UefaRankingPoints()
 ) {
 
     fun addNewSeason() {
         this.ranking.initNewSeason()
-        this.clubs.forEach { it.addNewSeason() }
+//        this.clubs.forEach { it.addNewSeason() }
     }
 
     fun getRankingSummaryLine(season: String): String {
@@ -39,7 +37,7 @@ class Federation(
         println("=====     ${this.name}     =====")
         println("System kalendarza: ${this.calendarSystem}")
         println("Aktualnie na: $rankingPosition miejscu w pięcioletnim rankingu UEFA")
-        println("Łącznie klubów: ${clubs.size}")
+//        println("Łącznie klubów: ${clubs.size}")
         this.campaigns.lastOrNull().let { campaignOrNull ->
             campaignOrNull?.let { campaign ->
                 campaign.leagues.forEach { league ->

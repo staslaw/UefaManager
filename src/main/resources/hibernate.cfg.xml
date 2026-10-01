@@ -21,6 +21,7 @@
         <!-- Class -->
         <mapping class="org.example.model.Federation"/>
         <mapping class="org.example.model.Campaign"/>
+        <mapping class="org.example.model.League"/>
         <mapping class="org.example.model.Club"/>
 
     </session-factory>
