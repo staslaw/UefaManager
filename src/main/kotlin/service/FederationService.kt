@@ -5,32 +5,35 @@ import org.example.model.Federation
 import org.example.model.getCurrentSeasonPoints
 import org.example.model.getFiveYearsRanking
 import org.example.model.getPreviousSeasonPoints
+import org.example.repository.CampaignRepository
 import org.example.repository.FederationRepository
+import org.example.repository.FederationRepository.getAllFederationsWithRanks
+import org.example.repository.LeagueRepository
 import org.example.service.SeasonService.Companion.getEuropeanCurrentSeason
 
 
 class FederationService() {
-    private val federations = FederationRepository.getAllFederations()
 
     fun printFederations() {
+        val federations = FederationRepository.getAllFederations()
         federations.forEach { println(it.name) }
     }
 
     fun printFederationSummary(federationName: String): String {
-        if (federations.map { it.name }.toList().contains(federationName)) {
-            val federation = federations.first { it.name == federationName }
-            val rankingPosition = sortFederations(getEuropeanCurrentSeason()).indexOf(federation) + 1
-            federation.printFederationSummary(rankingPosition)
-            return federationName
-        } else {
-            println("Nie ma takiej federacji w bazie.")
-            return ""
-        }
+        val sortedFederations = getFederationsSortedByRank(getEuropeanCurrentSeason())
+        sortedFederations.find { it.name.contains(federationName) }
+            ?.let { federation ->
+                val rankingPosition = sortedFederations.indexOf(federation) + 1
+                federation.printFederationSummary(rankingPosition)
+                return federationName
+            }
+        println("Nie ma takiej federacji w bazie.")
+        return ""
     }
 
     fun printFederationRanking(season: String) {
         println(getRankingHeader(season))
-        val sortedFederations = sortFederations(season)
+        val sortedFederations = getFederationsSortedByRank(season)
         for (i in 1..sortedFederations.size) {
             val federationString = sortedFederations[i - 1].getRankSummaryLine(season)
             var line = "$i."
@@ -39,8 +42,9 @@ class FederationService() {
         }
     }
 
-    private fun sortFederations(season: String): List<Federation> {
-        return ArrayList(this.federations)
+    private fun getFederationsSortedByRank(season: String): List<Federation> {
+        val federationsWithRanks = getAllFederationsWithRanks()
+        return ArrayList(federationsWithRanks)
             .sortedWith(compareByDescending<Federation> { it.rankingPoints.getFiveYearsRanking(season) }
                 .thenByDescending { it.rankingPoints.getCurrentSeasonPoints(season) }
                 .thenByDescending { it.rankingPoints.getPreviousSeasonPoints(season) }
@@ -48,31 +52,37 @@ class FederationService() {
     }
 
     fun addNewSeason() {
+        val federations = FederationRepository.getAllFederations()
         federations.forEach { it.addNewSeason() }
     }
 
     fun getAvailableSeasonsForFederation(federationName: String): List<String> {
-        return federations
+        return FederationRepository.getAllFederations()
             .find { it.name == federationName }
             ?.let { federation ->
-                val current = SeasonService.getCurrentSeason(federation.calendarSystem)
-                val previous = SeasonService.getPreviousSeason(federation.calendarSystem)
-                listOf(previous, current)
+                val campaignsForFederation = CampaignRepository.getAllCampaignsForFederation(federation)
+                campaignsForFederation.map { it.season }
             } ?: emptyList()
     }
 
     fun getAvailableLeagues(chosenSeason: String, federationName: String): List<String> {
-        return federations.find { it.name == federationName }?.let { federation ->
-            federation.campaigns.find { it.season == chosenSeason }?.let { campaign ->
-                campaign.leagues.map { it.name } }
-        } ?: emptyList()
+        return FederationRepository.getAllFederations()
+            .find { it.name == federationName }?.let { federation ->
+                CampaignRepository.getAllCampaignsForFederation(federation)
+                    .find { it.season == chosenSeason }?.let { campaign ->
+                        LeagueRepository.getLeaguesForCampaign(campaign).map { it.name }
+                    }
+            } ?: emptyList()
     }
 
-    fun printLeagueSummary(federationName: String, chosenLeague: String, chosenSeason: String){
-        federations.find { it.name == federationName }?.let { federation ->
-            federation.campaigns.find { it.season == chosenSeason }?.let { campaign ->
-                campaign.leagues.find { it.name == chosenLeague }?.printSummary()
+    fun printLeagueSummary(federationName: String, chosenLeague: String, chosenSeason: String) {
+        FederationRepository.getAllFederations()
+            .find { it.name == federationName }?.let { federation ->
+                CampaignRepository.getAllCampaignsForFederation(federation)
+                    .find { it.season == chosenSeason }?.let { campaign ->
+                        LeagueRepository.getLeaguesForCampaign(campaign)
+                            .find { it.name == chosenLeague }?.printSummary()
+                    }
             }
-        }
     }
 }

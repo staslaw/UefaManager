@@ -17,10 +17,11 @@ fun List<SeasonPoints>.assignPointsForSeason(season: String, assignValue: Double
 
 fun List<SeasonPoints>.getFiveYearsRanking(forSeason: String): Double {
     var sum = 0.0
+    val sortedThis = this.sortedBy { it.season }
     val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(forSeason)
     val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
     for (i in lastSeasonIndex..seasonIndex) {
-        sum += this[i].seasonRank
+        sum += sortedThis[i].seasonRank
     }
     return sum
 }
@@ -38,11 +39,12 @@ fun List<SeasonPoints>.getPreviousSeasonPoints(season: String): Double {
 
 fun List<SeasonPoints>.getRankingSummaryLine(forSeason: String): String {
     var line = ""
+    val sortedThis = this.sortedBy { it.season }
     val seasonIndex = SeasonService.getEuropeanSeasons().indexOf(forSeason)
     val lastSeasonIndex = if (seasonIndex < 4) 0 else seasonIndex - 4
     var fiveYearsRank = 0.0
     for (i in lastSeasonIndex..seasonIndex) {
-        val seasonRank = this[i].seasonRank
+        val seasonRank = sortedThis[i].seasonRank
         fiveYearsRank += seasonRank
         line = "$line$seasonRank"
         for (i in seasonRank.toString().length..< PRINTING_RANK_YEAR_COLUMN_TAB) line = "$line "

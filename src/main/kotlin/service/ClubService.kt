@@ -9,12 +9,11 @@ import org.example.repository.ClubRepository
 
 
 class ClubService() {
-    private val clubs = ClubRepository.getAllClubs()
-
 
     fun printClubRanking(season: String) {
-        val sortedClubs = sortClubsForRanking(season)
-        println("CLUBS: ${this.clubs.size}, RANKED: ${sortedClubs.size}")
+        val clubs = ClubRepository.getClubsWithRank()
+        val sortedClubs = sortClubsForRanking(clubs, season)
+        println("CLUBS: ${clubs.size}, RANKED: ${sortedClubs.size}")
         println(getRankingHeader(season))
         sortedClubs.forEachIndexed { id, club ->
             var line = "${id + 1}."
@@ -24,8 +23,8 @@ class ClubService() {
         }
     }
 
-    private fun sortClubsForRanking(season: String): List<Club> {
-        return this.clubs.filter { it.rankingPoints.getFiveYearsRanking(season) != 0.0 }
+    private fun sortClubsForRanking(clubs: Set<Club>, season: String): List<Club> {
+        return clubs.filter { it.rankingPoints.getFiveYearsRanking(season) != 0.0 }
             .sortedWith(compareByDescending<Club> { it.rankingPoints.getFiveYearsRanking(season) }
             .thenByDescending { it.rankingPoints.getCurrentSeasonPoints(season) }
             .thenByDescending { it.rankingPoints.getPreviousSeasonPoints(season) }

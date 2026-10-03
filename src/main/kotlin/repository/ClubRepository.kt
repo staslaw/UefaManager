@@ -32,4 +32,12 @@ object ClubRepository {
                 .resultList.toSet() }
     }
 
+    fun getClubsWithRank(): Set<Club> {
+        return Database.transaction { session ->
+            session.createQuery(
+                """SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.rankingPoints""",
+                Club::class.java
+            ).resultList.toSet() }
+    }
+
 }
