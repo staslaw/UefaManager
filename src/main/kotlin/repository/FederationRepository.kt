@@ -13,4 +13,12 @@ object FederationRepository {
             ).resultList.toSet() }
     }
 
+    fun getAllFederationsWithRanks(): Set<Federation> {
+        return Database.transaction { session ->
+            session.createQuery(
+                """SELECT f FROM Federation f LEFT JOIN FETCH f.rankingPoints""",
+                Federation::class.java
+            ).resultList.toSet() }
+    }
+
 }

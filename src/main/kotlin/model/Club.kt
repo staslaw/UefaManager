@@ -4,7 +4,9 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import org.example.init.utils.PRINTING_NAME_TAB
+import org.example.service.SeasonService
 
 
 @Entity
@@ -18,8 +20,8 @@ class Club(
     var federation: Federation,
     @ManyToMany
     var leagues: MutableSet<League> = mutableSetOf(),
-    @Transient
-    var ranking: UefaRankingPoints = UefaRankingPoints()
+    @OneToMany(mappedBy = "club")
+    val rankingPoints: MutableList<ClubRankingSeasonPoints> = mutableListOf()
 ) {
 
     fun getNameWithTab(): String {
@@ -34,11 +36,16 @@ class Club(
 
     fun rankSummary(season: String): String {
         val line = this.getNameWithTab()
-        val pointsLine = this.ranking.getRankingSummaryLine(season)
+        val pointsLine = this.rankingPoints.getRankingSummaryLine(season)
         return "$line$pointsLine"
     }
 
     fun addNewSeason() {
-        this.ranking.initNewSeason()
+        val lastSeason = rankingPoints.last().season
+        val newSeason = SeasonService.getEuropeanSeasons().last()
+        if (lastSeason == newSeason) {
+            throw Exception("Can not init new season for ClubRankingSeasonPoints class.")
+        }
+        rankingPoints.add(ClubRankingSeasonPoints(club = this, season = newSeason, seasonRank = 0.0))
     }
 }

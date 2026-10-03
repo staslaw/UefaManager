@@ -21,10 +21,10 @@ import org.example.service.SeasonService
 class FedSetup(val name: String, val tmID: Int, val calendarSystem: CalendarSystem)
 
 private val federationSetup = listOf(
-    FedSetup("Anglia",              189,    CalendarSystem.EUROPEAN),
+//    FedSetup("Anglia",              189,    CalendarSystem.EUROPEAN),
     FedSetup("Włochy",              75,     CalendarSystem.EUROPEAN),
     FedSetup("Hiszpania",           157,    CalendarSystem.EUROPEAN),
-    FedSetup("Niemcy",              40,     CalendarSystem.EUROPEAN),
+//    FedSetup("Niemcy",              40,     CalendarSystem.EUROPEAN),
 //    FedSetup("Francja",             50,     CalendarSystem.EUROPEAN),
 //    FedSetup("Holandia",            122,    CalendarSystem.EUROPEAN),
 //    FedSetup("Portugalia",          136,    CalendarSystem.EUROPEAN), // 2 liga nie ma aktualnego sezonu
