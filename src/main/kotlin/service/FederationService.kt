@@ -6,6 +6,7 @@ import org.example.model.getCurrentSeasonPoints
 import org.example.model.getFiveYearsRanking
 import org.example.model.getPreviousSeasonPoints
 import org.example.repository.CampaignRepository
+import org.example.repository.CampaignRepository.getCampaignWithLeaguesForFederationAndSeason
 import org.example.repository.FederationRepository
 import org.example.repository.FederationRepository.getAllFederationsWithRanks
 import org.example.repository.LeagueRepository
@@ -23,6 +24,8 @@ class FederationService() {
         val sortedFederations = getFederationsSortedByRank(getEuropeanCurrentSeason())
         sortedFederations.find { it.name.contains(federationName) }
             ?.let { federation ->
+                val campaigns = getCampaignWithLeaguesForFederationAndSeason(federation)
+                federation.campaigns = campaigns.toMutableSet()
                 val rankingPosition = sortedFederations.indexOf(federation) + 1
                 federation.printFederationSummary(rankingPosition)
                 return federationName

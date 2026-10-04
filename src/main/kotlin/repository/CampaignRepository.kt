@@ -15,4 +15,18 @@ object CampaignRepository {
                 .resultList.toSet() }
     }
 
+    fun getCampaignWithLeaguesForFederationAndSeason(federation: Federation): Set<Campaign> {
+        return Database.transaction { session ->
+            session.createQuery(
+                """SELECT c 
+                    FROM Campaign c 
+                    LEFT JOIN FETCH c.leagues 
+                    WHERE c.federation = :federation""",
+                Campaign::class.java
+            )
+                .setParameter("federation", federation)
+                .resultList.toSet()
+        }
+    }
+
 }

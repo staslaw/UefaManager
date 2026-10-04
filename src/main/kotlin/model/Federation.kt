@@ -43,11 +43,10 @@ class Federation(
         println("=====     ${this.name}     =====")
         println("System kalendarza: ${this.calendarSystem}")
         println("Aktualnie na: $rankingPosition miejscu w pięcioletnim rankingu UEFA")
-//        println("Łącznie klubów: ${clubs.size}")
         this.campaigns.lastOrNull().let { campaignOrNull ->
             campaignOrNull?.let { campaign ->
                 campaign.leagues.forEach { league ->
-                    println("${league.competitionLevel} liga: ${league.clubs.size}")
+                    println("${league.competitionLevel} liga: ${league.name}")
                 }
             }
         }
