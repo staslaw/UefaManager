@@ -150,7 +150,10 @@ fun initFederations() {
                     clubs.forEach { club ->
                         Database.transaction { session -> session.merge(club) }
                     }
-
+                    val leagueTable = htmlParser.getLeagueTable(league, clubs.toSet())
+                    leagueTable.forEach { tableRecord ->
+                        Database.transaction { session -> session.persist(tableRecord) }
+                    }
                 }
             }
         }

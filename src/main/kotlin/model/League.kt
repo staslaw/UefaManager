@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 
 
 @Entity
@@ -20,13 +21,13 @@ class League(
     var link: String,
     @ManyToMany(mappedBy = "leagues")
     var clubs: MutableSet<Club> = mutableSetOf(),
+    @OneToMany(mappedBy = "league")
+    var leagueTable: MutableSet<LeagueTableRecord> = mutableSetOf()
 ) {
-//    private val htmlParser = LeagueHtmlParser(this.federation, this.link, this)
-//    var leagueTable: LeagueTable? = this.htmlParser.getLeagueTable(this.clubs)
 
     fun printSummary() {
         println("$competitionLevel LIGA: ${this.name}")
-//        leagueTable?.printLeagueTable()
+        leagueTable.printLeagueTable()
     }
 
 }

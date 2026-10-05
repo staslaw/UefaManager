@@ -10,6 +10,7 @@ import org.example.repository.CampaignRepository.getCampaignWithLeaguesForFedera
 import org.example.repository.FederationRepository
 import org.example.repository.FederationRepository.getAllFederationsWithRanks
 import org.example.repository.LeagueRepository
+import org.example.repository.LeagueTableRecordRepository
 import org.example.service.SeasonService.Companion.getEuropeanCurrentSeason
 
 
@@ -84,7 +85,11 @@ class FederationService() {
                 CampaignRepository.getAllCampaignsForFederation(federation)
                     .find { it.season == chosenSeason }?.let { campaign ->
                         LeagueRepository.getLeaguesForCampaign(campaign)
-                            .find { it.name == chosenLeague }?.printSummary()
+                            .find { it.name == chosenLeague }?.let { league ->
+                                val tableRecords = LeagueTableRecordRepository.getTableRecordsForLeague(league)
+                                league.leagueTable = tableRecords.toMutableSet()
+                                league.printSummary()
+                            }
                     }
             }
     }

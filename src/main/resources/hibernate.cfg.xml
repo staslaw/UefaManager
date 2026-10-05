@@ -25,6 +25,7 @@
         <mapping class="org.example.model.Club"/>
         <mapping class="org.example.model.ClubRankingSeasonPoints"/>
         <mapping class="org.example.model.FederationRankingSeasonPoints"/>
+        <mapping class="org.example.model.LeagueTableRecord"/>
 
     </session-factory>
 </hibernate-configuration>
