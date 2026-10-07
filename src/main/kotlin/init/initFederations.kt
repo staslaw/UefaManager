@@ -1,12 +1,11 @@
 package org.example.init
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.example.init.htmlParser.FederationHtmlParser
 import org.example.init.htmlParser.LeagueHtmlParser
+import org.example.init.htmlParser.NationalCupHtmlParser
 import org.example.init.utils.CalendarSystem
 import org.example.model.Campaign
 import org.example.model.Club
@@ -15,13 +14,15 @@ import org.example.model.League
 import org.example.repository.Database
 import org.example.repository.FederationRepository
 import org.example.repository.CampaignRepository
+import org.example.repository.ClubRepository
 import org.example.repository.LeagueRepository
 import org.example.service.SeasonService
+
 
 class FedSetup(val name: String, val tmID: Int, val calendarSystem: CalendarSystem)
 
 private val federationSetup = listOf(
-//    FedSetup("Anglia",              189,    CalendarSystem.EUROPEAN),
+    FedSetup("Anglia",              189,    CalendarSystem.EUROPEAN),
     FedSetup("Włochy",              75,     CalendarSystem.EUROPEAN),
     FedSetup("Hiszpania",           157,    CalendarSystem.EUROPEAN),
 //    FedSetup("Niemcy",              40,     CalendarSystem.EUROPEAN),
@@ -69,7 +70,7 @@ private val federationSetup = listOf(
 //    FedSetup("Albania",             3,      CalendarSystem.EUROPEAN),
 //    FedSetup("Czarnogóra",          216,    CalendarSystem.EUROPEAN),
 //    FedSetup("Luksemburg",          99,     CalendarSystem.EUROPEAN),
-//    FedSetup("Walia",               191,    CalendarSystem.EUROPEAN),
+//    FedSetup("Walia",               191,    CalendarSystem.EUROPEAN), //brak danych o pucharze
 //    FedSetup("Gruzja",              53,     CalendarSystem.NORTH),
 //    FedSetup("Macedonia Północna",  100,    CalendarSystem.EUROPEAN),
 //    FedSetup("Białoruś",            18,     CalendarSystem.NORTH),
@@ -159,6 +160,25 @@ fun initFederations() {
         }
     }
 
+    runBlocking(Dispatchers.IO) {
+        val federations = FederationRepository.getAllFederations()
+        federations.forEach { federation ->
+            val federationHtmlParser = FederationHtmlParser(federation.link, federation.name)
+            val nationalCupHistoryLink = federationHtmlParser.getNationalCupHistoryLink()
+            val campaigns = CampaignRepository.getAllCampaignsForFederation(federation)
+            campaigns.forEach { campaign ->
+                launch {
+                    val nationalCupHtmlParser = NationalCupHtmlParser(nationalCupHistoryLink)
+                    val cupWinnerId = nationalCupHtmlParser.getNationalCupWinnerClubId(campaign.season, federation.calendarSystem)
+                    cupWinnerId?.let {
+                        val cupWinner = ClubRepository.getClubById(it)
+                        campaign.cupWinner = cupWinner
+                        Database.transaction { session -> session.merge(campaign) }
+                    }
+                }
+            }
+        }
+    }
 // sprawdzenie czy liga się zmieniła pomiędzy sezonami
 }
 

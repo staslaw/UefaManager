@@ -17,7 +17,9 @@ class Campaign(
     var federation: Federation,
     var season: String,
     @OneToMany(mappedBy = "campaign")
-    var leagues: MutableSet<League> = mutableSetOf()
+    var leagues: MutableSet<League> = mutableSetOf(),
+    @ManyToOne
+    var cupWinner: Club? = null
 ) {
 
 }
