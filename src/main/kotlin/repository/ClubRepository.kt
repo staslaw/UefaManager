@@ -40,4 +40,13 @@ object ClubRepository {
             ).resultList.toSet() }
     }
 
+    fun getClubById(id: Int): Club {
+        return Database.transaction { session ->
+            session.createQuery(
+                """FROM Club c WHERE c.id = :id""",
+                Club::class.java
+            ).setParameter("id", id)
+                .resultList[0] }
+    }
+
 }

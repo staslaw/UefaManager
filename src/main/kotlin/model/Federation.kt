@@ -43,9 +43,11 @@ class Federation(
         println("=====     ${this.name}     =====")
         println("System kalendarza: ${this.calendarSystem}")
         println("Aktualnie na: $rankingPosition miejscu w pięcioletnim rankingu UEFA")
+        val lastCampaignWithCupWinner = this.campaigns.filter { it.cupWinner != null }.maxByOrNull { it.season }
+        println("Aktualny zdobywca pucharu (${lastCampaignWithCupWinner?.season}): ${lastCampaignWithCupWinner?.cupWinner?.name}")
         this.campaigns.lastOrNull().let { campaignOrNull ->
             campaignOrNull?.let { campaign ->
-                campaign.leagues.forEach { league ->
+                campaign.leagues.sortedBy { it.competitionLevel }.forEach { league ->
                     println("${league.competitionLevel} liga: ${league.name}")
                 }
             }
