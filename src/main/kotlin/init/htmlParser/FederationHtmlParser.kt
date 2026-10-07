@@ -10,9 +10,9 @@ class FederationHtmlParser(private val link: String, private val federationName:
     private val html: Document = getHtmlJsoupDocument(link)
     private val leagueTableRows: Elements? = getLeagueTableRows()
     private var firstLeagueName: String? = null
-    private var secondLeagueName: String?? = null
-    private var firstLeagueBaseLink: String?? = null
-    private var secondLeagueBaseLink: String?? = null
+    private var secondLeagueName: String? = null
+    private var firstLeagueBaseLink: String? = null
+    private var secondLeagueBaseLink: String? = null
 
     init {
         parseHtmlToFirstLeagueInfo()

@@ -5,19 +5,19 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
 
 
 @Entity
-class Campaign(
+class FederationRankingSeasonPoints(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Int? = null,
     @ManyToOne
     var federation: Federation,
-    var season: String,
-    @OneToMany(mappedBy = "campaign")
-    var leagues: MutableSet<League> = mutableSetOf()
-) {
-
+    override val season: String,
+    override var seasonRank: Double
+): SeasonPoints {
+    override fun toString(): String {
+        return "${this.season} - ${this.seasonRank}"
+    }
 }

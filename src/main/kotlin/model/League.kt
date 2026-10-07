@@ -1,16 +1,33 @@
 package org.example.model
 
-import org.example.init.htmlParser.LeagueHtmlParser
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 
 
-class League(val name: String, val competitionLevel: Int, private val link: String, existingClubs: List<Club>) {
-    private val htmlParser = LeagueHtmlParser(this.link, existingClubs)
-    var clubs: List<Club> = this.htmlParser.getClubList()
-    var leagueTable: LeagueTable? = this.htmlParser.getLeagueTable(this.clubs)
+@Entity
+class League(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Int? = null,
+    @ManyToOne
+    var campaign: Campaign,
+    var name: String,
+    var competitionLevel: Int,
+    var link: String,
+    @ManyToMany(mappedBy = "leagues")
+    var clubs: MutableSet<Club> = mutableSetOf(),
+    @OneToMany(mappedBy = "league")
+    var leagueTable: MutableSet<LeagueTableRecord> = mutableSetOf()
+) {
 
     fun printSummary() {
         println("$competitionLevel LIGA: ${this.name}")
-        leagueTable?.printLeagueTable()
+        leagueTable.printLeagueTable()
     }
 
 }

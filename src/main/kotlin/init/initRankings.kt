@@ -3,6 +3,14 @@ package org.example.init
 import org.example.init.htmlParser.FederationRankingHtmlParser
 import org.example.init.htmlParser.ClubRankingHtmlParser
 import org.example.model.Club
+import org.example.model.ClubRankingSeasonPoints
+import org.example.model.Federation
+import org.example.model.FederationRankingSeasonPoints
+import org.example.model.assignPointsForSeason
+import org.example.repository.ClubRepository
+import org.example.repository.Database
+import org.example.repository.FederationRepository
+import org.example.service.SeasonService
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -18,18 +26,37 @@ fun initRankings() {
 }
 
 private fun getFederationsRank() {
-    getFederationsRankFromLink(countryRank17to21Path)
-    getFederationsRankFromLink(countryRank22to26Path)
+    val federations = FederationRepository.getAllFederationsWithRanks()
+    initFederationsRanking(federations)
+    getFederationsRankingFromLink(countryRank17to21Path, federations)
+    getFederationsRankingFromLink(countryRank22to26Path, federations)
+    saveFederationsRankingToDB(federations)
 }
 
-private fun getFederationsRankFromLink(link: String) {
+private fun initFederationsRanking(federations: Set<Federation>) {
+    federations.forEach { federation ->
+        for (season in SeasonService.getEuropeanSeasons()) {
+            federation.rankingPoints.add(FederationRankingSeasonPoints(federation = federation, season = season, seasonRank = 0.0))
+        }
+    }
+}
+
+private fun getFederationsRankingFromLink(link: String, federations: Set<Federation>) {
     val parser = FederationRankingHtmlParser(link)
     val countryToRanksMap = parser.getFederationsRankMapFromLink()
-    for (federation in initializedFederations) {
+    for (federation in federations) {
         countryToRanksMap[federation.name]?.let { rankMap ->
             for (rank in rankMap.entries) {
-                federation.ranking.assignPointsForSeason(rank.key, rank.value)
+                federation.rankingPoints.assignPointsForSeason(rank.key, rank.value)
             }
+        }
+    }
+}
+
+private fun saveFederationsRankingToDB(federations: Set<Federation>) {
+    federations.forEach { federation ->
+        federation.rankingPoints.forEach { ranks ->
+            Database.transaction { session -> session.persist(ranks) }
         }
     }
 }
@@ -39,8 +66,9 @@ private fun getClubsRank() {
     val countryToClubsToRankMap = parser.getCountryToClubsToRankMapFromLink()
 
     val allNotMatched = mutableListOf<Pair<String, HashMap<String, Double>>>()
-    for (federation in initializedFederations) {
-        val leagueClubs = federation.clubs.toMutableList()
+    for (federation in FederationRepository.getAllFederations()) {
+        val leagueClubs = ClubRepository.getClubsWithRankFromFederation(federation).toMutableList()
+        initClubsRanking(leagueClubs)
         val rankingClubs = countryToClubsToRankMap[federation.name]!!.toList().toMutableList()
 
         var notMatched = matchClubNames(rankingClubs, leagueClubs, ::isItSpecialMatch)
@@ -53,8 +81,25 @@ private fun getClubsRank() {
         notMatched = matchClubNames(notMatched, leagueClubs, ::isTheSameFilteredWithChangedChars)
         notMatched = matchClubNames(notMatched, leagueClubs, ::containsFilteredWithChangedChars)
         allNotMatched.addAll(notMatched)
+        saveClubsRankingToDB(leagueClubs)
     }
     println("${allNotMatched.size} klubów niedopasowanych z rankingiem")
+}
+
+private fun initClubsRanking(clubs: List<Club>) {
+    clubs.forEach { club ->
+        for (season in SeasonService.getEuropeanSeasons()) {
+            club.rankingPoints.add(ClubRankingSeasonPoints(club = club, season = season, seasonRank = 0.0))
+        }
+    }
+}
+
+private fun saveClubsRankingToDB(clubs: List<Club>) {
+    clubs.forEach { club ->
+        club.rankingPoints.forEach { ranks ->
+            Database.transaction { session -> session.persist(ranks) }
+        }
+    }
 }
 
 private fun matchClubNames(
@@ -70,7 +115,10 @@ private fun matchClubNames(
         } else {
             leagueClubs.remove(matches[0])
             rankingClubPair.second.forEach {
-                matches[0].ranking.assignPointsForSeason(it.key, it.value)
+                matches[0].rankingPoints.assignPointsForSeason(it.key, it.value)
+            }
+            matches[0].rankingPoints.forEach { ranks ->
+                Database.transaction { session -> session.persist(ranks) }
             }
         }
     }
